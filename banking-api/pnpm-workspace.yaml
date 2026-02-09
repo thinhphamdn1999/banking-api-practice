@@ -1,0 +1,5 @@
+onlyBuiltDependencies:
+  - '@clerk/shared'
+  - esbuild
+  - sqlite3
+  - unrs-resolver
