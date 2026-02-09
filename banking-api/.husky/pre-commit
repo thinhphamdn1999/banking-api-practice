@@ -1,0 +1,2 @@
+cd banking-api && pnpm run lint
+
