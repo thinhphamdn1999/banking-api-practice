@@ -1,6 +1,6 @@
 import { ApiResponse } from '@/common/types/response';
 
-import { User } from '@/components/user/data-access/user.entity';
+import { User } from '@/components/user/domain/entities/user.entity';
 
 import { userRepo } from '@/components/user/data-access/user.repository';
 

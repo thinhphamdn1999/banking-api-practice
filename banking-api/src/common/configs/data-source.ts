@@ -11,12 +11,14 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   entities: [
     isProd
-      ? 'dist/components/**/data-access/*.entity.js'
-      : 'src/components/**/data-access/*.entity.ts',
+      ? 'dist/components/**/domain/entities/*.entity.js'
+      : 'src/components/**/domain/entities/*.entity.ts',
   ],
 
   migrations: [
     isProd ? 'dist/common/database/migrations/*.js' : 'src/common/database/migrations/*.ts',
   ],
-  subscribers: ['src/common/database/subscribers/*.{ts,js}'],
+  subscribers: [
+    isProd ? 'dist/common/database/subscribers/*.js' : 'src/common/database/subscribers/*.ts',
+  ],
 });

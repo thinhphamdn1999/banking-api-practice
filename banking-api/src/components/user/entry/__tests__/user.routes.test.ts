@@ -4,7 +4,7 @@ import type { Express } from 'express';
 
 import { TestHelper } from '@/common/configs/test/dbInstance';
 
-import { User } from '@/components/user/data-access/user.entity';
+import { User } from '@/components/user/domain/entities/user.entity';
 
 describe('User Routes', () => {
   let app: Express;
