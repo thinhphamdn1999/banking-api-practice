@@ -1,14 +1,18 @@
-import { FilterOptions } from '@/components/user/types/user';
+import { FilterOptions, UserStatus } from '@/components/user/types/user';
+import { PaginationOptions } from '@/common/types/pagination';
 
 import { ERROR_CODES } from '@/common/constants/errors';
-import { PaginationOptions } from '@/common/types/pagination';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 
 import { User } from '@/components/user/domain/entities/user.entity';
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
+import { IdentityProvider } from '@/components/user/domain/external/identity-provider';
 
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly identityProvider: IdentityProvider,
+  ) {}
 
   async findUsers(
     pagination: PaginationOptions = {
@@ -25,7 +29,7 @@ export class UserService {
   async getUserById(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
+      return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }
 
     return { data: user };
@@ -34,7 +38,7 @@ export class UserService {
   async getUserByClerkUserId(clerkUserId: string) {
     const user = await this.userRepository.findByClerkUserId(clerkUserId);
     if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
+      return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }
 
     return { data: user };
@@ -48,10 +52,27 @@ export class UserService {
   async updateUser(userId: string, input: Partial<User>) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
+      return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }
 
     const updatedUser = await this.userRepository.update(input, userId);
     return { data: updatedUser };
+  }
+
+  async deActiveUser(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+    }
+
+    // Lock on Clerk side
+    await this.identityProvider.lockUser(user.clerkUserId);
+
+    // Update status in DB
+    const deactivatedUser = await this.userRepository.update(
+      { status: UserStatus.DE_ACTIVE, updatedAt: new Date() },
+      userId,
+    );
+    return { data: deactivatedUser };
   }
 }
