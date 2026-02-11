@@ -5,9 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 
-@Entity({ name: 'users' })
+import { UserRole, UserStatus } from '@/components/user/types/user.types';
+
+import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
+
+@Entity({ name: 'User' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
@@ -22,9 +27,6 @@ export class User {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   username!: string | null;
-
-  @Column({ type: 'text', nullable: true })
-  password!: string | null;
 
   @Column({ type: 'varchar', length: 150, nullable: true })
   firstName!: string | null;
@@ -44,9 +46,12 @@ export class User {
   @Column({ type: 'datetime', nullable: true })
   deletedAt!: Date;
 
-  @Column({ type: 'varchar', length: 20, default: 'active' })
-  status!: 'active' | 'de-active' | 'deleted';
+  @Column({ type: 'varchar', length: 20, default: UserStatus.ACTIVE })
+  status!: UserStatus;
 
-  @Column({ type: 'varchar', length: 20, default: 'user' })
-  role!: 'user' | 'admin';
+  @Column({ type: 'varchar', length: 20, default: UserRole.USER })
+  role!: UserRole;
+
+  @OneToMany(() => BankAccount, (bankAccount) => bankAccount.user)
+  bankAccounts!: BankAccount[];
 }

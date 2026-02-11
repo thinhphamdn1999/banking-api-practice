@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 
-import { User } from '@/components/user/data-access/user.entity';
+import { User } from '@/components/user/domain/entities/user.entity';
 
 export const TestDataSource = new DataSource({
   type: 'sqlite',
