@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { UserRole, UserStatus } from '@/components/user/types/user.types';
+import { UserRole, UserStatus } from '@/components/user/types/user';
 
 import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
 
