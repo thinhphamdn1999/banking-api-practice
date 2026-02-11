@@ -8,3 +8,7 @@ export enum UserStatus {
   DE_ACTIVE = 'de-active',
   DELETED = 'deleted',
 }
+
+export interface FilterOptions {
+  status?: UserStatus;
+}
