@@ -7,7 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { TransactionType } from '@/components/transaction/types/transaction';
+import { TransactionStatus, TransactionType } from '@/components/transaction/types/transaction';
 
 import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
 
@@ -23,7 +23,10 @@ export class Transaction {
   description!: string;
 
   @Column({ type: 'varchar', length: 20, default: TransactionType.DEPOSIT })
-  transactionType!: TransactionType;
+  type!: TransactionType;
+
+  @Column({ type: 'varchar', length: 20, default: TransactionStatus.PENDING })
+  status!: TransactionStatus;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, default: '0.0' })
   amount!: string;

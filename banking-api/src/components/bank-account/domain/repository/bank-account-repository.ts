@@ -2,7 +2,7 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { getDataSource } from '@/common/configs/db';
 
-import { ORDER } from '@/common/constants/filters';
+import { Order } from '@/common/constants/filters';
 
 import { PaginationOptions } from '@/common/types/pagination';
 import { FilterOptions } from '@/components/bank-account/types/bank-account';
@@ -25,7 +25,7 @@ export class BankAccountRepository extends BaseRepository<BankAccount> {
 
     return await this.paginate(pagination, {
       where,
-      order: { createdAt: ORDER.DESC },
+      order: { createdAt: Order.DESC },
     });
   }
 }

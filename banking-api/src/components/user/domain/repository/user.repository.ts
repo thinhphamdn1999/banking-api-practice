@@ -2,7 +2,7 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { getDataSource } from '@/common/configs/db';
 
-import { ORDER } from '@/common/constants/filters';
+import { Order } from '@/common/constants/filters';
 
 import { FilterOptions } from '@/components/user/types/user';
 import { PaginationOptions } from '@/common/types/pagination';
@@ -25,7 +25,7 @@ export class UserRepository extends BaseRepository<User> {
 
     return await this.paginate(pagination, {
       where,
-      order: { createdAt: ORDER.DESC },
+      order: { createdAt: Order.DESC },
     });
   }
 
