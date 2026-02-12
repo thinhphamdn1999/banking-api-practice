@@ -9,11 +9,14 @@ import { limiter } from '@/common/middleware/rateLimit';
 import { requireAuth } from '@/common/middleware/requiredAuth';
 
 import userRouter from '@/components/user/entry/user.routes';
+import webhookRouter from '@/components/webhook/entry/clerk-webhook.routes';
 
 const app = express();
 
 app.use(helmet());
 app.use(limiter);
+
+app.use('/api/webhooks', webhookRouter);
 
 app.use(express.json());
 

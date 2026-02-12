@@ -1,3 +1,5 @@
+import { UserStatus } from '@/components/user/types/user';
+
 export interface UserInfo {
   email: string | null;
   firstName: string | null;
@@ -6,6 +8,7 @@ export interface UserInfo {
   avatarUrl: string | null;
   createdAt: Date;
   updatedAt?: Date;
+  status: UserStatus;
 }
 
 export interface IdentityProvider {

@@ -21,7 +21,6 @@ export class User {
   @Column({ type: 'varchar', length: 255 })
   clerkUserId!: string;
 
-  @Index({ unique: true })
   @Column({ type: 'varchar', length: 255, nullable: true })
   email!: string | null;
 

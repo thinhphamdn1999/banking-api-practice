@@ -21,3 +21,7 @@ jest.mock('@clerk/express', () => ({
     },
   },
 }));
+
+jest.mock('@clerk/express/webhooks', () => ({
+  verifyWebhook: jest.fn(),
+}));
