@@ -26,9 +26,10 @@ pnpm install
 
 3. Create `.env` based on `.env.example` and set values:
 ```
-PORT=3000
-CLERK_PUBLISHABLE_KEY=pk_test_YWJsZS1ndWxsLTM5LmNsZXJrLmFjY291bnRzLmRldiQ
-CLERK_SECRET_KEY=sk_test_jfb4oJDlakz8IQbi9I46k4FnbS7ellvsYr9MPuC4vp
+PORT=
+CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+CLERK_WEBHOOK_SIGNING_SECRET=
 ```
 
 4. Start server

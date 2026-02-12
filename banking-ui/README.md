@@ -17,7 +17,7 @@ pnpm install
 
 3. Create `.env` based on `.env.example` and set values:
 ```
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_YWJsZS1ndWxsLTM5LmNsZXJrLmFjY291bnRzLmRldiQ
+VITE_CLERK_PUBLISHABLE_KEY=
 ```
 
 4. Run app

@@ -2,6 +2,8 @@ import { clerkClient } from '@clerk/express';
 
 import { MILLISECONDS_PER_SECOND } from '@/common/constants/time';
 
+import { UserStatus } from '@/components/user/types/user';
+
 import { IdentityProvider } from '@/components/user/domain/external/identity-provider';
 
 export class ClerkIdentityProvider implements IdentityProvider {
@@ -16,6 +18,7 @@ export class ClerkIdentityProvider implements IdentityProvider {
       avatarUrl: user.imageUrl ?? null,
       createdAt: new Date(user.createdAt * MILLISECONDS_PER_SECOND),
       updatedAt: user.updatedAt ? new Date(user.updatedAt * MILLISECONDS_PER_SECOND) : undefined,
+      status: user.locked ? UserStatus.DE_ACTIVE : UserStatus.ACTIVE,
     };
   }
 

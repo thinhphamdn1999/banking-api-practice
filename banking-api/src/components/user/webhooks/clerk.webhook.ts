@@ -51,6 +51,7 @@ export class ClerkWebhook {
         username: updatedInfo.username,
         avatarUrl: updatedInfo.avatarUrl,
         updatedAt: updatedInfo.updatedAt,
+        status: updatedInfo.status,
       },
       user.id,
     );

@@ -22,11 +22,9 @@ export class UserController {
         },
         req.query,
       );
-      res.status(HttpStatusCode.OK).json(result.data);
-    } catch (error) {
-      console.log(error);
-
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+      return res.status(HttpStatusCode.OK).json(result.data);
+    } catch {
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
           statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
           errors: [
@@ -45,7 +43,7 @@ export class UserController {
       const result = await this.userService.getUserById(req.params.id as string);
 
       if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
-        res.status(HttpStatusCode.NOT_FOUND).json(
+        return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
@@ -56,12 +54,10 @@ export class UserController {
             ],
           }),
         );
-
-        return;
       }
-      res.status(HttpStatusCode.OK).json(result.data);
+      return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
           statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
           errors: [
@@ -80,7 +76,7 @@ export class UserController {
       const result = await this.userService.getUserById(req.params.id as string);
 
       if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
-        res.status(HttpStatusCode.NOT_FOUND).json(
+        return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
@@ -91,17 +87,13 @@ export class UserController {
             ],
           }),
         );
-
-        return;
       }
 
       const updatedUser = await this.userService.deActiveUser(result.data?.id as string);
 
-      res.status(HttpStatusCode.OK).json(updatedUser.data);
-    } catch (error) {
-      console.log(error);
-
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+      return res.status(HttpStatusCode.OK).json(updatedUser.data);
+    } catch {
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
           statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
           errors: [
