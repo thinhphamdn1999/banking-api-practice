@@ -28,4 +28,21 @@ export class BankAccountRepository extends BaseRepository<BankAccount> {
       order: { createdAt: Order.DESC },
     });
   }
+
+  async findBankAccountByClerkUserIdAndBankId(clerkUserId: string, bankId: string) {
+    return await this.repository.findOne({
+      where: {
+        user: { clerkUserId },
+        id: bankId,
+      },
+    });
+  }
+
+  async findByAccountNumber(accountNumber: string) {
+    return await this.repository.findOne({
+      where: {
+        accountNumber,
+      },
+    });
+  }
 }

@@ -23,5 +23,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     );
   }
 
+  req.user = { clerkUserId: userId };
+
   next();
 }
