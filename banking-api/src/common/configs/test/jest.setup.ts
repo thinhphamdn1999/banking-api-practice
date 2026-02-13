@@ -4,7 +4,7 @@ import 'reflect-metadata';
 jest.mock('@clerk/express', () => ({
   clerkMiddleware: () => (req: any, res: any, next: any) => next(),
   requireAuth: () => (req: any, res: any, next: any) => next(),
-  getAuth: () => ({ userId: 'test-user-id' }),
+  getAuth: () => ({ userId: 'test_user_id' }),
 
   clerkClient: {
     users: {

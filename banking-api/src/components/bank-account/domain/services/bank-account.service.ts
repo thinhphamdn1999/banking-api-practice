@@ -1,16 +1,32 @@
 import { PaginationOptions } from '@/common/types/pagination';
-import { FilterOptions } from '@/components/bank-account/types/bank-account';
+import {
+  CreateBankAccountInput,
+  FilterOptions,
+  UpdateBankAccountInput,
+} from '@/components/bank-account/types/bank-account';
 
 import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 
 import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
-import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
+import { UserRepository } from '@/components/user/domain/repository/user.repository';
 
 export class BankAccountService {
-  constructor(private readonly bankAccountRepository: BankAccountRepository) {}
+  constructor(
+    private readonly bankAccountRepository: BankAccountRepository,
+    private readonly userRepository: UserRepository,
+  ) {}
 
-  async findUsers(
+  private async generateUniqueAccountNumber(): Promise<string> {
+    while (true) {
+      const number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+
+      const exists = await this.bankAccountRepository.findByAccountNumber(number);
+      if (!exists) return number;
+    }
+  }
+
+  async findBankAccounts(
     pagination: PaginationOptions = {
       page: DEFAULT_PAGINATION_PAGE,
       limit: DEFAULT_PAGINATION_LIMIT,
@@ -31,18 +47,41 @@ export class BankAccountService {
     return { data: bankAccount };
   }
 
-  async createBankAccount(input: Partial<BankAccount>) {
-    const newBankAccount = await this.bankAccountRepository.create(input);
+  async createBankAccount({ name, clerkUserId }: CreateBankAccountInput) {
+    const user = await this.userRepository.findByClerkUserId(clerkUserId);
+
+    if (!user) {
+      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+    }
+
+    // TODO: Apply retry to handle race condition (2 separated users create account at the same time)
+    const newAccountNumber = await this.generateUniqueAccountNumber();
+
+    const newBankAccount = await this.bankAccountRepository.create({
+      user,
+      name,
+      accountNumber: newAccountNumber,
+    });
+
     return { data: newBankAccount };
   }
 
-  async updateBankAccount(userId: string, input: Partial<BankAccount>) {
-    const bankAccount = await this.bankAccountRepository.findById(userId);
+  async updateBankAccount({ name, clerkUserId, bankAccountId }: UpdateBankAccountInput) {
+    const bankAccount = await this.bankAccountRepository.findBankAccountByClerkUserIdAndBankId(
+      clerkUserId,
+      bankAccountId,
+    );
+
     if (!bankAccount) {
       return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }
 
-    const updatedBankAccount = await this.bankAccountRepository.update(input, userId);
+    const updatedBankAccount = await this.bankAccountRepository.update(
+      {
+        name,
+      },
+      bankAccountId,
+    );
     return { data: updatedBankAccount };
   }
 }
