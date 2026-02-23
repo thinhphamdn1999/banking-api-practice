@@ -1,5 +1,6 @@
 import HttpStatusCode from '@/common/constants/httpStatusCode';
-import type { ApiError, ApiErrorInput } from '@/common/types/error';
+import type { ApiError, ApiErrorInput, InvalidErrorInput } from '@/common/types/error';
+import { ERROR_CODES } from '../constants/errors';
 
 /**
  * Map an HTTP status to a standardized error response object
@@ -40,4 +41,14 @@ export const createErrorResponse = ({ statusCode, message, errors }: ApiErrorInp
   };
 
   return errorResponse;
+};
+
+export const getInvalidErrorList = ({ prefix, properties }: InvalidErrorInput) => {
+  return properties.map(({ property, description }) => {
+    return {
+      errCode: ERROR_CODES.INVALID_REQUEST,
+      field: `${prefix}.${property}`,
+      message: description,
+    };
+  });
 };

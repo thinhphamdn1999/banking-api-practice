@@ -31,6 +31,9 @@ export class Transaction {
   @Column({ type: 'decimal', precision: 15, scale: 2, default: '0.0' })
   amount!: string;
 
+  @Column({ type: 'varchar', length: 20, default: 'USD' })
+  currency!: string;
+
   @Column({ type: 'text' })
   idempotencyKey!: string;
 
@@ -40,9 +43,9 @@ export class Transaction {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @ManyToOne(() => BankAccount)
+  @ManyToOne(() => BankAccount, { nullable: true })
   fromAccount!: BankAccount;
 
-  @ManyToOne(() => BankAccount)
+  @ManyToOne(() => BankAccount, { nullable: true })
   toAccount!: BankAccount;
 }

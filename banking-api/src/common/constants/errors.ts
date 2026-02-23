@@ -4,4 +4,8 @@ export enum ERROR_CODES {
   ITEM_NOT_FOUND = 'itemNotFound',
   ITEM_ALREADY_EXISTS = 'itemAlreadyExists',
   INVALID_REQUEST = 'invalidRequest',
+  SOURCE_ACCOUNT_NOT_FOUND = 'sourceAccountNotFound',
+  DESTINATION_ACCOUNT_NOT_FOUND = 'destinationAccountNotFound',
+  INVALID_AMOUNT = 'invalidAmount',
+  INSUFFICIENT_BALANCE = 'insufficientBalance',
 }
