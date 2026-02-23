@@ -11,6 +11,7 @@ import { requireAuth } from '@/common/middleware/requiredAuth';
 import userRouter from '@/components/user/entry/user.routes';
 import webhookRouter from '@/components/webhook/entry/clerk-webhook.routes';
 import bankAccountRouter from '@/components/bank-account/entry/bank-account.routes';
+import transactionRouter from '@/components/transaction/entry/transaction.routes';
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.get('/', (req, res) => res.json({ title: 'Banking API' }));
 
 app.use('/api/users', requireAuth, userRouter);
 app.use('/api/bank-accounts', requireAuth, bankAccountRouter);
+app.use('/api/transactions', requireAuth, transactionRouter);
 
 export default app;

@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, EntityManager } from 'typeorm';
 
 import { getDataSource } from '@/common/configs/db';
 
@@ -43,6 +43,15 @@ export class BankAccountRepository extends BaseRepository<BankAccount> {
       where: {
         accountNumber,
       },
+    });
+  }
+
+  async findByIdWithLock(id: string, manager: EntityManager) {
+    return manager.getRepository(BankAccount).findOne({
+      where: { id },
+      // SQLite does not support lock mode
+      // TODO: Switch to other tools (PostgreSQL)
+      // lock: { mode: 'pessimistic_write' },
     });
   }
 }

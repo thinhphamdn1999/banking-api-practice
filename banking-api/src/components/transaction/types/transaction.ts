@@ -1,4 +1,5 @@
 import { Order } from '@/common/constants/filters';
+import { Amount } from '@/common/types/currency';
 
 export enum TransactionType {
   DEPOSIT = 'deposit',
@@ -19,5 +20,18 @@ export interface FilterOptions {
   status?: TransactionStatus;
   orderBy?: Order;
   sortBy?: string;
-  bankAccountId?: string[];
+  bankAccountIds?: string[];
+}
+
+export interface CreateTransactionInput {
+  type: TransactionType;
+  amount: Amount;
+  idempotencyKey: string;
+  sourceAccountId?: string;
+  destinationAccountId?: string;
+  description?: string;
+}
+
+export interface UpdateTransactionInput {
+  description?: string;
 }

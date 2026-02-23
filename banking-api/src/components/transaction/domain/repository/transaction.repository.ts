@@ -1,4 +1,11 @@
-import { Between, FindOptionsWhere, In, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import {
+  Between,
+  EntityManager,
+  FindOptionsWhere,
+  In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+} from 'typeorm';
 
 import { getDataSource } from '@/common/configs/db';
 
@@ -37,10 +44,10 @@ export class TransactionRepository extends BaseRepository<Transaction> {
       baseCondition.createdAt = LessThanOrEqual(filter.toDate);
     }
 
-    if (filter?.bankAccountId?.length) {
+    if (filter?.bankAccountIds?.length) {
       where.push(
-        { ...baseCondition, fromAccount: { id: In(filter.bankAccountId) } },
-        { ...baseCondition, toAccount: { id: In(filter.bankAccountId) } },
+        { ...baseCondition, fromAccount: { id: In(filter.bankAccountIds) } },
+        { ...baseCondition, toAccount: { id: In(filter.bankAccountIds) } },
       );
     } else {
       where.push(baseCondition);
@@ -48,8 +55,29 @@ export class TransactionRepository extends BaseRepository<Transaction> {
 
     return await this.paginate(pagination, {
       where,
+      relations: {
+        fromAccount: true,
+        toAccount: true,
+      },
       order: {
         [filter?.sortBy ?? 'createdAt']: filter?.orderBy ?? Order.DESC,
+      },
+    });
+  }
+
+  async findByIdWithRelation(id: string) {
+    return this.findById(id, undefined, {
+      fromAccount: true,
+      toAccount: true,
+    });
+  }
+
+  async findByIdempotencyKey(idempotencyKey: string, manager?: EntityManager) {
+    return this.getRepository(manager).findOne({
+      where: { idempotencyKey },
+      relations: {
+        fromAccount: true,
+        toAccount: true,
       },
     });
   }
