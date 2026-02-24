@@ -35,28 +35,9 @@ export class UserService {
     return { data: user };
   }
 
-  async getUserByClerkUserId(clerkUserId: string) {
-    const user = await this.userRepository.findByClerkUserId(clerkUserId);
-    if (!user) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
-    }
-
-    return { data: user };
-  }
-
   async createUser(input: Partial<User>) {
     const newUser = await this.userRepository.create(input);
     return { data: newUser };
-  }
-
-  async updateUser(userId: string, input: Partial<User>) {
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
-    }
-
-    const updatedUser = await this.userRepository.update(input, userId);
-    return { data: updatedUser };
   }
 
   async deActiveUser(userId: string) {

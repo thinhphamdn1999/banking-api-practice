@@ -35,7 +35,7 @@ describe('User Routes', () => {
     return userRepo.save(users);
   };
 
-  describe('GET /api/user', () => {
+  describe('GET /api/users', () => {
     it('should return [] when no user', async () => {
       const res = await request(app).get('/api/users');
 
@@ -72,6 +72,33 @@ describe('User Routes', () => {
         expect.objectContaining({
           currentPage: 1,
           limit: 20,
+          offset: 0,
+          pageCount: 1,
+          totalCount: 1,
+        }),
+      );
+    });
+
+    it('should return list of users with pagination', async () => {
+      await seedUser();
+      const res = await request(app).get('/api/users?page=1&limit=10');
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('data');
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0]).toEqual(
+        expect.objectContaining({
+          email: 'test@example.com',
+          clerkUserId: 'clerk_test_user_1',
+          id: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        }),
+      );
+      expect(res.body.metadata).toEqual(
+        expect.objectContaining({
+          currentPage: 1,
+          limit: 10,
           offset: 0,
           pageCount: 1,
           totalCount: 1,

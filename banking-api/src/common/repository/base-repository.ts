@@ -78,9 +78,10 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
     entity: QueryDeepPartialEntity<T>,
     id: string,
     manager?: EntityManager,
+    relations?: FindOptionsRelations<T>,
   ): Promise<T | null> {
     await this.getRepository(manager).update(id, entity);
-    return this.findById(id);
+    return this.findById(id, undefined, relations);
   }
 
   async delete(id: string, manager?: EntityManager): Promise<void> {

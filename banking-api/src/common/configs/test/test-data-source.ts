@@ -6,7 +6,7 @@ import { Transaction } from '@/components/transaction/domain/entities/transactio
 
 export const TestDataSource = new DataSource({
   type: 'sqlite',
-  database: 'banking-api-test.sqlite',
+  database: ':memory:',
   dropSchema: true,
   synchronize: true,
   logging: false,

@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 import { ERROR_CODES } from '@/common/constants/errors';
 
+import { BaseError } from '@/common/types/error';
 import { PaginationOptions } from '@/common/types/pagination';
 import {
   CreateTransactionInput,
@@ -14,7 +15,6 @@ import {
 import { TransactionRepository } from '@/components/transaction/domain/repository/transaction.repository';
 import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
 import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
-import { BaseError } from '@/common/types/error';
 
 export class TransactionService {
   constructor(
@@ -132,12 +132,15 @@ export class TransactionService {
   }
 
   async updateTransaction(transactionId: string, input: UpdateTransactionInput) {
-    const transaction = await this.transactionRepository.findById(transactionId);
+    const transaction = await this.transactionRepository.findByIdWithRelation(transactionId);
     if (!transaction) {
       return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }
 
-    const updatedTransaction = await this.transactionRepository.update(input, transactionId);
+    const updatedTransaction = await this.transactionRepository.updateAndGetTransactionWithRelation(
+      input,
+      transactionId,
+    );
     return { data: updatedTransaction };
   }
 }

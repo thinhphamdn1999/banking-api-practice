@@ -12,7 +12,7 @@ import { getDataSource } from '@/common/configs/db';
 import { Order } from '@/common/constants/filters';
 
 import { PaginationOptions } from '@/common/types/pagination';
-import { FilterOptions } from '@/components/transaction/types/transaction';
+import { FilterOptions, UpdateTransactionInput } from '@/components/transaction/types/transaction';
 
 import { BaseRepository } from '@/common/repository/base-repository';
 
@@ -44,7 +44,7 @@ export class TransactionRepository extends BaseRepository<Transaction> {
       baseCondition.createdAt = LessThanOrEqual(filter.toDate);
     }
 
-    if (filter?.bankAccountIds?.length) {
+    if (filter?.bankAccountIds?.length && filter?.bankAccountIds?.length > 0) {
       where.push(
         { ...baseCondition, fromAccount: { id: In(filter.bankAccountIds) } },
         { ...baseCondition, toAccount: { id: In(filter.bankAccountIds) } },
@@ -79,6 +79,13 @@ export class TransactionRepository extends BaseRepository<Transaction> {
         fromAccount: true,
         toAccount: true,
       },
+    });
+  }
+
+  async updateAndGetTransactionWithRelation(input: UpdateTransactionInput, id: string) {
+    return this.update(input, id, undefined, {
+      fromAccount: true,
+      toAccount: true,
     });
   }
 }
