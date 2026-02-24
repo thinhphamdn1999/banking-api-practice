@@ -5,7 +5,7 @@ import helmet from 'helmet';
 
 import corsOptions from '@/common/configs/cors';
 
-import { limiter } from '@/common/middleware/rateLimit';
+import { authLimiter } from '@/common/middleware/rateLimit';
 import { requireAuth } from '@/common/middleware/requiredAuth';
 
 import userRouter from '@/components/user/entry/user.routes';
@@ -16,19 +16,16 @@ import transactionRouter from '@/components/transaction/entry/transaction.routes
 const app = express();
 
 app.use(helmet());
-app.use(limiter);
+app.use(cors(corsOptions));
 
 app.use('/api/webhooks', webhookRouter);
 
 app.use(express.json());
 
 app.use(clerkMiddleware());
-app.use(cors(corsOptions));
 
-app.get('/', (req, res) => res.json({ title: 'Banking API' }));
-
-app.use('/api/users', requireAuth, userRouter);
-app.use('/api/bank-accounts', requireAuth, bankAccountRouter);
-app.use('/api/transactions', requireAuth, transactionRouter);
+app.use('/api/users', requireAuth, authLimiter, userRouter);
+app.use('/api/bank-accounts', requireAuth, authLimiter, bankAccountRouter);
+app.use('/api/transactions', requireAuth, authLimiter, transactionRouter);
 
 export default app;
