@@ -1,0 +1,42 @@
+PaginationMetadata:
+  type: object
+  properties:
+    limit:
+      type: integer
+      example: 20
+    offset:
+      type: integer
+      example: 0
+    currentPage:
+      type: integer
+      example: 1
+    pageCount:
+      type: integer
+      example: 5
+    totalCount:
+      type: integer
+      example: 100
+
+ApiErrorItem:
+  type: object
+  properties:
+    errCode:
+      type: string
+      example: itemNotFound
+    message:
+      type: string
+      example: Can not find user
+
+ApiErrorResponse:
+  type: object
+  properties:
+    statusCode:
+      type: integer
+      example: 404
+    message:
+      type: string
+      example: Resource Not Found
+    errors:
+      type: array
+      items:
+        $ref: '#/ApiErrorItem'

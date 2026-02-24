@@ -1,0 +1,141 @@
+bankAccounts:
+  get:
+    tags:
+      - Bank Accounts
+    summary: Get bank accounts
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: query
+        name: userId
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Bank account list
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/bank-account.schema.yaml#/BankAccountListResponse'
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+  post:
+    tags:
+      - Bank Accounts
+    summary: Create bank account
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/bank-account.schema.yaml#/CreateBankAccountRequest'
+    responses:
+      '201':
+        description: Bank account created
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/bank-account.schema.yaml#/BankAccountSingleResponse'
+      '400':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '404':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+
+bankAccountById:
+  get:
+    tags:
+      - Bank Accounts
+    summary: Get bank account by id
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Bank account detail
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/bank-account.schema.yaml#/BankAccountSingleResponse'
+      '404':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+  put:
+    tags:
+      - Bank Accounts
+    summary: Update bank account
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/bank-account.schema.yaml#/UpdateBankAccountRequest'
+    responses:
+      '200':
+        description: Updated bank account
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/bank-account.schema.yaml#/BankAccountSingleResponse'
+      '400':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '404':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'

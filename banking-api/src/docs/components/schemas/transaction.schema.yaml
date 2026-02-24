@@ -1,0 +1,89 @@
+TransactionAmount:
+  type: object
+  properties:
+    amount:
+      type: integer
+      example: 10000
+    currency:
+      type: string
+      example: USD
+
+Transaction:
+  type: object
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    description:
+      type: string
+      nullable: true
+    type:
+      type: string
+      example: deposit
+    status:
+      type: string
+      example: success
+    amount:
+      $ref: '#/TransactionAmount'
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    fromAccount:
+      $ref: '../schemas/bank-account.schema.yaml#/BankAccount'
+    toAccount:
+      $ref: '../schemas/bank-account.schema.yaml#/BankAccount'
+
+TransactionListResponse:
+  type: object
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Transaction'
+    metadata:
+      $ref: './common.schema.yaml#/PaginationMetadata'
+
+CreateTransactionRequest:
+  type: object
+  required:
+    - type
+    - amount
+    - idempotencyKey
+  properties:
+    type:
+      type: string
+      example: deposit
+    amount:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: number
+          example: 100
+        currency:
+          type: string
+          example: USD
+    sourceAccountId:
+      type: string
+      nullable: true
+    destinationAccountId:
+      type: string
+      nullable: true
+    description:
+      type: string
+      nullable: true
+    idempotencyKey:
+      type: string
+
+UpdateTransactionRequest:
+  type: object
+  properties:
+    description:
+      type: string
+      nullable: true

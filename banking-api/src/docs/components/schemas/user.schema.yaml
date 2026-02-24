@@ -1,0 +1,54 @@
+User:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    clerkUserId:
+      type: string
+    email:
+      type: string
+      nullable: true
+    username:
+      type: string
+      nullable: true
+    firstName:
+      type: string
+      nullable: true
+    lastName:
+      type: string
+      nullable: true
+    avatarUrl:
+      type: string
+      nullable: true
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    deletedAt:
+      type: string
+      format: date-time
+      nullable: true
+    status:
+      type: string
+      enum:
+        - active
+        - de-active
+        - deleted
+    role:
+      type: string
+      enum:
+        - admin
+        - user
+
+UserPaginatedResponse:
+  type: object
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/User'
+    metadata:
+      $ref: './common.schema.yaml#/PaginationMetadata'
