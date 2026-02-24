@@ -1,0 +1,39 @@
+openapi: 3.0.3
+info:
+  title: Banking API
+  version: 1.0.0
+  description: Banking system API documentation
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development
+
+tags:
+  - name: Users
+  - name: Bank Accounts
+  - name: Transactions
+  - name: Webhooks
+
+paths:
+  /users:
+    $ref: './paths/users.yaml#/users'
+  /users/{id}:
+    $ref: './paths/users.yaml#/userById'
+  /users/{id}/de-active:
+    $ref: './paths/users.yaml#/deActiveUser'
+
+  /bank-accounts:
+    $ref: './paths/bank-accounts.yaml#/bankAccounts'
+  /bank-accounts/{id}:
+    $ref: './paths/bank-accounts.yaml#/bankAccountById'
+
+  /transactions:
+    $ref: './paths/transaction.yaml#/transactions'
+  /transactions/{id}:
+    $ref: './paths/transaction.yaml#/transactionById'
+
+components:
+  schemas:
+    $ref: './components/schemas/common.schema.yaml'
+  securitySchemes:
+    $ref: './components/securitySchemes.yaml'

@@ -1,0 +1,54 @@
+BankAccount:
+  type: object
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    accountNumber:
+      type: string
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+
+CreateBankAccountRequest:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      example: Main Account
+
+UpdateBankAccountRequest:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      example: Updated Account Name
+
+BankAccountSingleResponse:
+  type: object
+  required:
+    - data
+  properties:
+    data:
+      $ref: '#/BankAccount'
+
+BankAccountListResponse:
+  type: object
+  required:
+    - data
+    - metadata
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/BankAccount'
+    metadata:
+      $ref: './common.schema.yaml#/PaginationMetadata'

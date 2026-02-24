@@ -1,0 +1,92 @@
+users:
+  get:
+    tags:
+      - Users
+    summary: Get paginated users
+    parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - active
+            - de-active
+    responses:
+      '200':
+        description: Paginated list of users
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/user.schema.yaml#/UserPaginatedResponse'
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+userById:
+  get:
+    tags:
+      - Users
+    summary: Get user by id
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: User found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/user.schema.yaml#/User'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+deActiveUser:
+  post:
+    tags:
+      - Users
+    summary: Deactivate user
+    description: Locks user in identity provider and sets status to de-active
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: User deactivated
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/user.schema.yaml#/User'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'

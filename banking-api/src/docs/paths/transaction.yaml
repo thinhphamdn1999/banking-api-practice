@@ -1,0 +1,161 @@
+transactions:
+  get:
+    tags:
+      - Transactions
+    summary: Get transactions
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: query
+        name: type
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: query
+        name: fromDate
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: toDate
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: bankAccountIds
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+      - in: query
+        name: sortBy
+        schema:
+          type: string
+      - in: query
+        name: orderBy
+        schema:
+          type: string
+          example: DESC
+    responses:
+      '200':
+        description: Transaction list
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/transaction.schema.yaml#/TransactionListResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+  post:
+    tags:
+      - Transactions
+    summary: Create transaction
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/transaction.schema.yaml#/CreateTransactionRequest'
+    responses:
+      '201':
+        description: Transaction created
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/transaction.schema.yaml#/Transaction'
+      '400':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+
+transactionById:
+  get:
+    tags:
+      - Transactions
+    summary: Get transaction by id
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Transaction detail
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/transaction.schema.yaml#/Transaction'
+      '404':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+  put:
+    tags:
+      - Transactions
+    summary: Update transaction
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/transaction.schema.yaml#/UpdateTransactionRequest'
+    responses:
+      '200':
+        description: Updated transaction
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/transaction.schema.yaml#/Transaction'
+      '404':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
