@@ -74,6 +74,28 @@ describe('Clerk Webhook Route', () => {
       expect(user?.deletedAt).toBeTruthy();
     });
 
+    it('should update user on user.updated event', async () => {
+      await userRepo.save({
+        clerkUserId: 'clerk_test_update',
+        email: 'old@test.com',
+      });
+
+      mockVerifyWebhook.mockResolvedValue({
+        type: 'user.updated',
+        data: { id: 'clerk_test_update' },
+      });
+
+      const res = await request(app).post('/api/webhooks/clerk').send({});
+
+      expect(res.status).toBe(200);
+
+      const user = await userRepo.findOneBy({
+        clerkUserId: 'clerk_test_update',
+      });
+
+      expect(user).toBeTruthy();
+    });
+
     it('should return 400 for unknown event', async () => {
       mockVerifyWebhook.mockResolvedValue({
         type: 'unknown.event',

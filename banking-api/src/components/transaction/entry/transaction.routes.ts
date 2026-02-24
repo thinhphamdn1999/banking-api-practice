@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { TransactionRepository } from '../domain/repository/transaction.repository';
-import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
-import { TransactionService } from '../domain/services/transaction.service';
-import { TransactionController } from './transaction.controller';
+
 import { getDataSource } from '@/common/configs/db';
+
+import { TransactionRepository } from '@/components/transaction/domain/repository/transaction.repository';
+import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
+import { TransactionService } from '@/components/transaction/domain/services/transaction.service';
+import { TransactionController } from '@/components/transaction/entry/transaction.controller';
 
 const transactionRouter = Router();
 

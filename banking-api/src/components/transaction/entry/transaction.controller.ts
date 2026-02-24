@@ -1,12 +1,23 @@
 import { Request, Response } from 'express';
 
-import { TransactionService } from '../domain/services/transaction.service';
+import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 import HttpStatusCode from '@/common/constants/httpStatusCode';
-import { createErrorResponse, getInvalidErrorList } from '@/common/utils/errorResponse';
-import { ERROR_CODES } from '@/common/constants/errors';
-import { TransactionType } from '../types/transaction';
+import { Order } from '@/common/constants/filters';
+
 import { BaseError } from '@/common/types/error';
+import {
+  FilterOptions,
+  TransactionStatus,
+  TransactionType,
+} from '@/components/transaction/types/transaction';
+import { Transaction } from '@/components/transaction/domain/entities/transaction.entity';
+
+import { TransactionService } from '@/components/transaction/domain/services/transaction.service';
+
+import { transactionMapper } from '@/components/transaction/entry/transaction.mapper';
+
+import { createErrorResponse, getInvalidErrorList } from '@/common/utils/errorResponse';
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {
@@ -18,16 +29,37 @@ export class TransactionController {
 
   async getTransactions(req: Request, res: Response) {
     try {
-      const { page, limit } = req.query;
+      const { page, limit, type, status, fromDate, toDate, bankAccountIds, sortBy, orderBy } =
+        req.query;
+
+      const normalizedBankAccountIds = Array.isArray(bankAccountIds)
+        ? bankAccountIds
+        : bankAccountIds
+          ? [bankAccountIds]
+          : [];
+
+      const filters: FilterOptions = {
+        type: type as TransactionType,
+        status: status as TransactionStatus,
+        fromDate: fromDate ? new Date(fromDate as string) : undefined,
+        toDate: toDate ? new Date(toDate as string) : undefined,
+        bankAccountIds: normalizedBankAccountIds as string[],
+        sortBy: sortBy as string,
+        orderBy: orderBy as Order,
+      };
 
       const result = await this.transactionService.findTransactions(
         {
-          page: page ? Number(req.query.page) : DEFAULT_PAGINATION_PAGE,
-          limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT,
+          page: page ? Number(page) : DEFAULT_PAGINATION_PAGE,
+          limit: limit ? Number(limit) : DEFAULT_PAGINATION_LIMIT,
         },
-        req.query,
+        filters,
       );
-      return res.status(HttpStatusCode.OK).json(result.data);
+
+      return res.status(HttpStatusCode.OK).json({
+        data: result.data.data.map((transaction) => transactionMapper(transaction)),
+        metadata: result.data.metadata,
+      });
     } catch {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
@@ -61,7 +93,7 @@ export class TransactionController {
         );
       }
 
-      return res.status(HttpStatusCode.OK).json(result.data);
+      return res.status(HttpStatusCode.OK).json(transactionMapper(result.data as Transaction));
     } catch {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
@@ -147,7 +179,7 @@ export class TransactionController {
         sourceAccountId,
       });
 
-      return res.status(HttpStatusCode.CREATED).json(result.data);
+      return res.status(HttpStatusCode.CREATED).json(transactionMapper(result.data as Transaction));
     } catch (error: unknown) {
       if (error instanceof BaseError) {
         if (error.message === ERROR_CODES.INVALID_AMOUNT) {
@@ -187,8 +219,8 @@ export class TransactionController {
               errors: [
                 {
                   errCode: ERROR_CODES.DESTINATION_ACCOUNT_NOT_FOUND,
-                  field: 'transaction.sourceAccountId',
-                  message: 'Can not found the bank account with sourceAccountId',
+                  field: 'transaction.destinationAccountId',
+                  message: 'Can not found the bank account with destinationAccountId',
                 },
               ],
             }),
@@ -201,7 +233,7 @@ export class TransactionController {
               statusCode: HttpStatusCode.BAD_REQUEST,
               errors: [
                 {
-                  errCode: ERROR_CODES.DESTINATION_ACCOUNT_NOT_FOUND,
+                  errCode: ERROR_CODES.SOURCE_ACCOUNT_NOT_FOUND,
                   field: 'transaction.sourceAccountId',
                   message: 'Can not found the bank account with sourceAccountId',
                 },
@@ -210,8 +242,6 @@ export class TransactionController {
           );
         }
       }
-
-      console.log(error);
 
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
@@ -250,7 +280,7 @@ export class TransactionController {
         );
       }
 
-      return res.status(HttpStatusCode.OK).json(result.data);
+      return res.status(HttpStatusCode.OK).json(transactionMapper(result.data as Transaction));
     } catch {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
         createErrorResponse({
