@@ -23,7 +23,12 @@ export class TransactionRepository extends BaseRepository<Transaction> {
     super(getDataSource().getRepository(Transaction));
   }
 
-  async findTransactions(pagination: PaginationOptions, filter?: FilterOptions) {
+  async findTransactions(
+    pagination: PaginationOptions,
+    filter?: FilterOptions,
+    userId?: string,
+    isAdmin?: boolean,
+  ) {
     const where: FindOptionsWhere<Transaction>[] = [];
 
     const baseCondition: FindOptionsWhere<Transaction> = {};
@@ -44,13 +49,54 @@ export class TransactionRepository extends BaseRepository<Transaction> {
       baseCondition.createdAt = LessThanOrEqual(filter.toDate);
     }
 
-    if (filter?.bankAccountIds?.length && filter?.bankAccountIds?.length > 0) {
-      where.push(
-        { ...baseCondition, fromAccount: { id: In(filter.bankAccountIds) } },
-        { ...baseCondition, toAccount: { id: In(filter.bankAccountIds) } },
-      );
+    const hasAccountFilter = filter?.bankAccountIds && filter.bankAccountIds.length > 0;
+
+    // no ownership restriction
+    if (isAdmin) {
+      if (hasAccountFilter) {
+        where.push(
+          { ...baseCondition, fromAccount: { id: In(filter!.bankAccountIds!) } },
+          { ...baseCondition, toAccount: { id: In(filter!.bankAccountIds!) } },
+        );
+      } else {
+        where.push(baseCondition);
+      }
     } else {
-      where.push(baseCondition);
+      // restrict by ownership
+
+      if (!userId) {
+        where.push({ id: '__never_match__' });
+      } else {
+        if (hasAccountFilter) {
+          where.push(
+            {
+              ...baseCondition,
+              fromAccount: {
+                id: In(filter!.bankAccountIds!),
+                user: { id: userId },
+              },
+            },
+            {
+              ...baseCondition,
+              toAccount: {
+                id: In(filter!.bankAccountIds!),
+                user: { id: userId },
+              },
+            },
+          );
+        } else {
+          where.push(
+            {
+              ...baseCondition,
+              fromAccount: { user: { id: userId } },
+            },
+            {
+              ...baseCondition,
+              toAccount: { user: { id: userId } },
+            },
+          );
+        }
+      }
     }
 
     return await this.paginate(pagination, {
@@ -65,11 +111,18 @@ export class TransactionRepository extends BaseRepository<Transaction> {
     });
   }
 
-  async findByIdWithRelation(id: string) {
-    return this.findById(id, undefined, {
-      fromAccount: true,
-      toAccount: true,
-    });
+  async findByIdWithRelation(id: string, userId: string, isAdmin: boolean) {
+    const qb = this.getRepository()
+      .createQueryBuilder('t')
+      .leftJoinAndSelect('t.fromAccount', 'from')
+      .leftJoinAndSelect('t.toAccount', 'to')
+      .where('t.id = :transactionId', { id });
+
+    if (!isAdmin) {
+      qb.andWhere('(from.userId = :userId OR to.userId = :userId)', { userId });
+    }
+
+    return qb.getOne();
   }
 
   async findByIdempotencyKey(idempotencyKey: string, manager?: EntityManager) {

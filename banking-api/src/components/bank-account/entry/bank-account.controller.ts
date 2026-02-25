@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
+
 import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 import HttpStatusCode from '@/common/constants/http-status-code';
+
+import { FilterOptions } from '@/components/bank-account/types/bank-account';
 
 import { BankAccountService } from '@/components/bank-account/domain/services/bank-account.service';
 
@@ -18,13 +21,18 @@ export class BankAccountController {
   async getBankAccounts(req: Request, res: Response) {
     try {
       const { page, limit } = req.query;
+      const { id: userId } = req.user ?? {};
+
+      const filter: FilterOptions = {
+        userId,
+      };
 
       const result = await this.bankAccountService.findBankAccounts(
         {
           page: page ? Number(req.query.page) : DEFAULT_PAGINATION_PAGE,
           limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT,
         },
-        req.query,
+        filter,
       );
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
@@ -78,7 +86,7 @@ export class BankAccountController {
 
   async createBankAccount(req: Request, res: Response) {
     try {
-      const { clerkUserId } = req.user ?? {};
+      const { id: userId } = req.user ?? {};
       const { name } = req.body;
 
       if (!name) {
@@ -98,7 +106,7 @@ export class BankAccountController {
 
       const result = await this.bankAccountService.createBankAccount({
         name,
-        clerkUserId: clerkUserId as string,
+        userId: userId as string,
       });
 
       if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
@@ -135,7 +143,7 @@ export class BankAccountController {
     try {
       const bankAccountId = req.params.id;
       const { name } = req.body;
-      const { clerkUserId } = req.user ?? {};
+      const { id: userId } = req.user ?? {};
 
       if (!name) {
         return res.status(HttpStatusCode.BAD_REQUEST).json(
@@ -154,7 +162,7 @@ export class BankAccountController {
 
       const result = await this.bankAccountService.updateBankAccount({
         name,
-        clerkUserId: clerkUserId as string,
+        userId: userId as string,
         bankAccountId: bankAccountId as string,
       });
 

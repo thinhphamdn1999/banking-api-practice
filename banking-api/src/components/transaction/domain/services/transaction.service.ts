@@ -29,14 +29,25 @@ export class TransactionService {
       limit: DEFAULT_PAGINATION_LIMIT,
     },
     filter?: FilterOptions,
+    userId?: string,
+    isAdmin?: boolean,
   ) {
-    const transaction = await this.transactionRepository.findTransactions(pagination, filter);
+    const transaction = await this.transactionRepository.findTransactions(
+      pagination,
+      filter,
+      userId,
+      isAdmin,
+    );
 
     return { data: transaction };
   }
 
-  async getTransactionById(transactionId: string) {
-    const transaction = await this.transactionRepository.findByIdWithRelation(transactionId);
+  async getTransactionById(transactionId: string, userId: string, isAdmin: boolean) {
+    const transaction = await this.transactionRepository.findByIdWithRelation(
+      transactionId,
+      userId,
+      isAdmin,
+    );
     if (!transaction) {
       return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }
@@ -131,8 +142,17 @@ export class TransactionService {
     });
   }
 
-  async updateTransaction(transactionId: string, input: UpdateTransactionInput) {
-    const transaction = await this.transactionRepository.findByIdWithRelation(transactionId);
+  async updateTransaction(
+    transactionId: string,
+    input: UpdateTransactionInput,
+    userId: string,
+    isAdmin: boolean,
+  ) {
+    const transaction = await this.transactionRepository.findByIdWithRelation(
+      transactionId,
+      userId,
+      isAdmin,
+    );
     if (!transaction) {
       return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }

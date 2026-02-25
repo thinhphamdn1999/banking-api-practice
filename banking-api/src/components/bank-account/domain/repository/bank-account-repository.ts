@@ -29,10 +29,10 @@ export class BankAccountRepository extends BaseRepository<BankAccount> {
     });
   }
 
-  async findBankAccountByClerkUserIdAndBankId(clerkUserId: string, bankId: string) {
+  async findBankAccountByUserIdAndBankId(userId: string, bankId: string) {
     return await this.repository.findOne({
       where: {
-        user: { clerkUserId },
+        user: { id: userId },
         id: bankId,
       },
     });

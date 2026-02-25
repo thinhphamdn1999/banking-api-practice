@@ -12,6 +12,7 @@ import {
   TransactionType,
 } from '@/components/transaction/types/transaction';
 import { Transaction } from '@/components/transaction/domain/entities/transaction.entity';
+import { UserRole } from '@/components/user/types/user';
 
 import { TransactionService } from '@/components/transaction/domain/services/transaction.service';
 
@@ -31,6 +32,7 @@ export class TransactionController {
     try {
       const { page, limit, type, status, fromDate, toDate, bankAccountIds, sortBy, orderBy } =
         req.query;
+      const { id: userId, role } = req.user ?? {};
 
       const normalizedBankAccountIds = Array.isArray(bankAccountIds)
         ? bankAccountIds
@@ -54,6 +56,8 @@ export class TransactionController {
           limit: limit ? Number(limit) : DEFAULT_PAGINATION_LIMIT,
         },
         filters,
+        userId,
+        role === UserRole.ADMIN,
       );
 
       return res.status(HttpStatusCode.OK).json({
@@ -77,7 +81,13 @@ export class TransactionController {
 
   async getTransactionById(req: Request, res: Response) {
     try {
-      const result = await this.transactionService.getTransactionById(req.params.id as string);
+      const { id: userId, role } = req.user ?? {};
+
+      const result = await this.transactionService.getTransactionById(
+        req.params.id as string,
+        userId as string,
+        role === UserRole.ADMIN,
+      );
 
       if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -261,10 +271,16 @@ export class TransactionController {
     try {
       const transactionId = req.params.id;
       const { description } = req.body;
+      const { id: userId, role } = req.user ?? {};
 
-      const result = await this.transactionService.updateTransaction(transactionId as string, {
-        description,
-      });
+      const result = await this.transactionService.updateTransaction(
+        transactionId as string,
+        {
+          description,
+        },
+        userId as string,
+        role === UserRole.ADMIN,
+      );
 
       if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(

@@ -12,6 +12,7 @@ import userRouter from '@/components/user/entry/user.routes';
 import webhookRouter from '@/components/webhook/entry/clerk-webhook.routes';
 import bankAccountRouter from '@/components/bank-account/entry/bank-account.routes';
 import transactionRouter from '@/components/transaction/entry/transaction.routes';
+import { attachDbUser } from '@/common/middleware/attach-db-user';
 
 const app = express();
 
@@ -24,8 +25,8 @@ app.use(express.json());
 
 app.use(clerkMiddleware());
 
-app.use('/api/users', requireAuth, authLimiter, userRouter);
-app.use('/api/bank-accounts', requireAuth, authLimiter, bankAccountRouter);
-app.use('/api/transactions', requireAuth, authLimiter, transactionRouter);
+app.use('/api/users', requireAuth, attachDbUser, authLimiter, userRouter);
+app.use('/api/bank-accounts', requireAuth, attachDbUser, authLimiter, bankAccountRouter);
+app.use('/api/transactions', requireAuth, attachDbUser, authLimiter, transactionRouter);
 
 export default app;
