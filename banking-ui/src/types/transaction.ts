@@ -3,14 +3,18 @@ import type { BankAccountSummary } from './bank-account';
 export type TransactionType = 'deposit' | 'withdraw' | 'transfer';
 export type TransactionStatus = 'pending' | 'success' | 'failed';
 
+export interface TransactionAmount {
+  amount: number;
+  currency: string;
+}
+
 export interface Transaction {
   id: string;
   name: string;
   description: string | null;
   type: TransactionType;
   status: TransactionStatus;
-  amount: string; // decimal stored as string from the API
-  currency: string;
+  amount: TransactionAmount;
   idempotencyKey: string;
   createdAt: string;
   updatedAt: string;
@@ -20,10 +24,10 @@ export interface Transaction {
 
 export interface CreateTransactionPayload {
   type: TransactionType;
-  amount: number;
+  amount: TransactionAmount;
   idempotencyKey: string;
-  fromAccountId?: string;
-  toAccountId?: string;
+  sourceAccountId?: string;
+  destinationAccountId?: string;
   description?: string;
 }
 
