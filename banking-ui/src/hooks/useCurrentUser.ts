@@ -1,10 +1,27 @@
+import { useUser } from '@clerk/clerk-react';
+import { useQuery } from '@tanstack/react-query';
+
+import { QUERY_KEYS } from '@/constants/queryKeys';
+import { usersService } from '@/services/users.service';
+
 /**
- * Stub — will be replaced with a real React Query implementation in Step 5.
- * Returns isLoading: true so AdminRoute shows a spinner until the hook is wired up.
+ * Returns the currently authenticated user from our API.
+ *
+ * The banking-api has no /me endpoint, so we fetch the user list and match
+ * by clerkUserId. Fetches up to 100 users — acceptable for a practice app.
+ *
+ * Replaces the Step 3 stub. AdminRoute and ProfilePage depend on this.
  */
 export const useCurrentUser = () => {
-  return {
-    data: null as null | { role: 'admin' | 'user' },
-    isLoading: true,
-  };
+  const { user: clerkUser } = useUser();
+
+  return useQuery({
+    queryKey: QUERY_KEYS.CURRENT_USER,
+    queryFn: async () => {
+      const response = await usersService.getAll({ limit: 100 });
+      return response.data.find((u) => u.clerkUserId === clerkUser?.id) ?? null;
+    },
+    enabled: !!clerkUser?.id,
+    staleTime: 5 * 60 * 1000, // 5 min — role/status rarely changes
+  });
 };
