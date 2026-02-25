@@ -1,6 +1,20 @@
+import { UserProfile } from '@clerk/clerk-react';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-// Full implementation in Step 11
 export const ProfilePage = () => {
-  return <Typography variant="title_medium">Profile</Typography>;
+  return (
+    <Stack spacing={3}>
+      <Typography variant="title_medium">Profile</Typography>
+
+      <UserProfile
+        appearance={{
+          elements: {
+            rootBox: { width: '100%' },
+            card: { width: '100%', boxShadow: 'none', border: '1px solid', borderColor: 'divider' },
+          },
+        }}
+      />
+    </Stack>
+  );
 };
