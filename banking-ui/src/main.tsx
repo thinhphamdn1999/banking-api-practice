@@ -30,14 +30,11 @@ createRoot(document.getElementById('root')!).render(
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<QueryClientProvider client={queryClient}>
-					<SnackbarProvider
-						maxSnack={3}
-						anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-					>
+					<SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
 						<App />
 					</SnackbarProvider>
 				</QueryClientProvider>
 			</ThemeProvider>
 		</ClerkProvider>
-	</StrictMode>
+	</StrictMode>,
 );
