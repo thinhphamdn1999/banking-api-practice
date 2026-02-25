@@ -47,8 +47,8 @@ export class BankAccountService {
     return { data: bankAccount };
   }
 
-  async createBankAccount({ name, clerkUserId }: CreateBankAccountInput) {
-    const user = await this.userRepository.findByClerkUserId(clerkUserId);
+  async createBankAccount({ name, userId }: CreateBankAccountInput) {
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
       return { error: ERROR_CODES.ITEM_NOT_FOUND };
@@ -66,9 +66,9 @@ export class BankAccountService {
     return { data: newBankAccount };
   }
 
-  async updateBankAccount({ name, clerkUserId, bankAccountId }: UpdateBankAccountInput) {
-    const bankAccount = await this.bankAccountRepository.findBankAccountByClerkUserIdAndBankId(
-      clerkUserId,
+  async updateBankAccount({ name, userId, bankAccountId }: UpdateBankAccountInput) {
+    const bankAccount = await this.bankAccountRepository.findBankAccountByUserIdAndBankId(
+      userId,
       bankAccountId,
     );
 

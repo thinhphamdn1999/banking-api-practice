@@ -1,5 +1,6 @@
 export enum ERROR_CODES {
   UNAUTHENTICATED = 'unauthenticated',
+  FORBIDDEN = 'forbidden',
   GENERAL_EXCEPTION = 'generalException',
   ITEM_NOT_FOUND = 'itemNotFound',
   ITEM_ALREADY_EXISTS = 'itemAlreadyExists',

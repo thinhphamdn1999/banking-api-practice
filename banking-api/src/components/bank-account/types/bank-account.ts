@@ -1,15 +1,14 @@
 export interface FilterOptions {
   userId?: string;
-  bankAccountIds?: string[];
 }
 
 export interface CreateBankAccountInput {
   name: string;
-  clerkUserId: string;
+  userId: string;
 }
 
 export interface UpdateBankAccountInput {
   name: string;
-  clerkUserId: string;
+  userId: string;
   bankAccountId: string;
 }
