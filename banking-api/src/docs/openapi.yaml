@@ -28,12 +28,12 @@ paths:
     $ref: './paths/bank-accounts.yaml#/bankAccountById'
 
   /transactions:
-    $ref: './paths/transaction.yaml#/transactions'
+    $ref: './paths/transactions.yaml#/transactions'
   /transactions/{id}:
-    $ref: './paths/transaction.yaml#/transactionById'
+    $ref: './paths/transactions.yaml#/transactionById'
 
 components:
   schemas:
     $ref: './components/schemas/common.schema.yaml'
   securitySchemes:
-    $ref: './components/securitySchemes.yaml'
+    $ref: './components/schemas/security.schema.yaml'

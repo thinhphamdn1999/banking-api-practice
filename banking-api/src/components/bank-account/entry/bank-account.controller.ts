@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
 import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
-import HttpStatusCode from '@/common/constants/httpStatusCode';
+import HttpStatusCode from '@/common/constants/http-status-code';
 
 import { BankAccountService } from '@/components/bank-account/domain/services/bank-account.service';
 
-import { createErrorResponse } from '@/common/utils/errorResponse';
+import { createErrorResponse } from '@/common/utils/error-response';
 
 export class BankAccountController {
   constructor(private readonly bankAccountService: BankAccountService) {

@@ -1,4 +1,4 @@
-import HttpStatusCode from '@/common/constants/httpStatusCode';
+import HttpStatusCode from '@/common/constants/http-status-code';
 import type { ApiError, ApiErrorInput, InvalidErrorInput } from '@/common/types/error';
 import { ERROR_CODES } from '../constants/errors';
 

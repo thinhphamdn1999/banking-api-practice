@@ -1,17 +1,21 @@
 import type { Request, Response } from 'express';
 
-import HttpStatusCode from '@/common/constants/httpStatusCode';
+import HttpStatusCode from '@/common/constants/http-status-code';
 import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 
 import { UserService } from '@/components/user/domain/services/user.service';
 
-import { createErrorResponse } from '@/common/utils/errorResponse';
+import { createErrorResponse } from '@/common/utils/error-response';
 
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+    this.getUsers = this.getUsers.bind(this);
+    this.getUserById = this.getUserById.bind(this);
+    this.deActiveUser = this.deActiveUser.bind(this);
+  }
 
-  getUsers = async (req: Request, res: Response) => {
+  async getUsers(req: Request, res: Response) {
     try {
       const { page, limit } = req.query;
 
@@ -36,9 +40,9 @@ export class UserController {
         }),
       );
     }
-  };
+  }
 
-  getUserById = async (req: Request, res: Response) => {
+  async getUserById(req: Request, res: Response) {
     try {
       const result = await this.userService.getUserById(req.params.id as string);
 
@@ -69,9 +73,9 @@ export class UserController {
         }),
       );
     }
-  };
+  }
 
-  deActiveUser = async (req: Request, res: Response) => {
+  async deActiveUser(req: Request, res: Response) {
     try {
       const result = await this.userService.getUserById(req.params.id as string);
 
@@ -105,5 +109,5 @@ export class UserController {
         }),
       );
     }
-  };
+  }
 }

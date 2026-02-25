@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
-import HttpStatusCode from '@/common/constants/httpStatusCode';
+import HttpStatusCode from '@/common/constants/http-status-code';
 import { Order } from '@/common/constants/filters';
 
 import { BaseError } from '@/common/types/error';
@@ -17,7 +17,7 @@ import { TransactionService } from '@/components/transaction/domain/services/tra
 
 import { transactionMapper } from '@/components/transaction/entry/transaction.mapper';
 
-import { createErrorResponse, getInvalidErrorList } from '@/common/utils/errorResponse';
+import { createErrorResponse, getInvalidErrorList } from '@/common/utils/error-response';
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {

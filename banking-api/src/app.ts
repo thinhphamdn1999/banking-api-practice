@@ -5,8 +5,8 @@ import helmet from 'helmet';
 
 import corsOptions from '@/common/configs/cors';
 
-import { authLimiter } from '@/common/middleware/rateLimit';
-import { requireAuth } from '@/common/middleware/requiredAuth';
+import { authLimiter } from '@/common/middleware/rate-limit';
+import { requireAuth } from '@/common/middleware/required-auth';
 
 import userRouter from '@/components/user/entry/user.routes';
 import webhookRouter from '@/components/webhook/entry/clerk-webhook.routes';

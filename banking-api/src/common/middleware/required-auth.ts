@@ -1,10 +1,10 @@
 import { getAuth } from '@clerk/express';
 import type { Request, Response, NextFunction } from 'express';
 
-import HttpStatusCode from '@/common/constants/httpStatusCode';
+import HttpStatusCode from '@/common/constants/http-status-code';
 import { ERROR_CODES } from '@/common/constants/errors';
 
-import { createErrorResponse } from '@/common/utils/errorResponse';
+import { createErrorResponse } from '@/common/utils/error-response';
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const { userId } = getAuth(req);
