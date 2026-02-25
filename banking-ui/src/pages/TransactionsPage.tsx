@@ -30,312 +30,310 @@ import { formatTransactionAmount } from '@/utils/transaction';
 import type { Transaction, TransactionStatus, TransactionType } from '@/types/transaction';
 
 export const TransactionsPage = () => {
-	const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-	// -------------------------------------------------------------------------
-	// Filter state — accountIds can be pre-populated from URL ?accountId=...
-	// -------------------------------------------------------------------------
-	const [typeFilter, setTypeFilter] = useState<TransactionType | ''>('');
-	const [statusFilter, setStatusFilter] = useState<TransactionStatus | ''>('');
-	const [fromDate, setFromDate] = useState<Dayjs | null>(null);
-	const [toDate, setToDate] = useState<Dayjs | null>(null);
-	const initAccountId = searchParams.get('accountId');
-	const [accountIds, setAccountIds] = useState<string[]>(initAccountId ? [initAccountId] : []);
+  // -------------------------------------------------------------------------
+  // Filter state — accountIds can be pre-populated from URL ?accountId=...
+  // -------------------------------------------------------------------------
+  const [typeFilter, setTypeFilter] = useState<TransactionType | ''>('');
+  const [statusFilter, setStatusFilter] = useState<TransactionStatus | ''>('');
+  const [fromDate, setFromDate] = useState<Dayjs | null>(null);
+  const [toDate, setToDate] = useState<Dayjs | null>(null);
+  const initAccountId = searchParams.get('accountId');
+  const [accountIds, setAccountIds] = useState<string[]>(initAccountId ? [initAccountId] : []);
 
-	// -------------------------------------------------------------------------
-	// Pagination (0-indexed for DataGrid, 1-indexed for the API)
-	// -------------------------------------------------------------------------
-	const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
+  // -------------------------------------------------------------------------
+  // Pagination (0-indexed for DataGrid, 1-indexed for the API)
+  // -------------------------------------------------------------------------
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
 
-	// -------------------------------------------------------------------------
-	// Modal state
-	// -------------------------------------------------------------------------
-	const [createOpen, setCreateOpen] = useState(false);
-	const [editTx, setEditTx] = useState<Transaction | null>(null);
+  // -------------------------------------------------------------------------
+  // Modal state
+  // -------------------------------------------------------------------------
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editTx, setEditTx] = useState<Transaction | null>(null);
 
-	// -------------------------------------------------------------------------
-	// Data
-	// -------------------------------------------------------------------------
-	const { data: accountsResponse } = useBankAccounts();
-	const accounts = accountsResponse?.data ?? [];
+  // -------------------------------------------------------------------------
+  // Data
+  // -------------------------------------------------------------------------
+  const { data: accountsResponse } = useBankAccounts();
+  const accounts = accountsResponse?.data ?? [];
 
-	const queryParams = {
-		page: paginationModel.page + 1,
-		limit: paginationModel.pageSize,
-		orderBy: 'DESC' as const,
-		...(typeFilter && { type: typeFilter }),
-		...(statusFilter && { status: statusFilter }),
-		...(fromDate && { fromDate: fromDate.startOf('day').toISOString() }),
-		...(toDate && { toDate: toDate.endOf('day').toISOString() }),
-		...(accountIds.length > 0 && { bankAccountIds: accountIds }),
-	};
+  const queryParams = {
+    page: paginationModel.page + 1,
+    limit: paginationModel.pageSize,
+    orderBy: 'DESC' as const,
+    ...(typeFilter && { type: typeFilter }),
+    ...(statusFilter && { status: statusFilter }),
+    ...(fromDate && { fromDate: fromDate.startOf('day').toISOString() }),
+    ...(toDate && { toDate: toDate.endOf('day').toISOString() }),
+    ...(accountIds.length > 0 && { bankAccountIds: accountIds }),
+  };
 
-	const { data: txResponse, isLoading } = useTransactions(queryParams);
-	const rows = txResponse?.data ?? [];
-	const rowCount = txResponse?.metadata?.total ?? 0;
+  const { data: txResponse, isLoading } = useTransactions(queryParams);
+  const rows = txResponse?.data ?? [];
+  const rowCount = txResponse?.metadata?.total ?? 0;
 
-	// -------------------------------------------------------------------------
-	// Filter helpers
-	// -------------------------------------------------------------------------
-	const resetPage = () => setPaginationModel((prev) => ({ ...prev, page: 0 }));
+  // -------------------------------------------------------------------------
+  // Filter helpers
+  // -------------------------------------------------------------------------
+  const resetPage = () => setPaginationModel((prev) => ({ ...prev, page: 0 }));
 
-	const hasActiveFilters = !!(typeFilter || statusFilter || fromDate || toDate || accountIds.length);
+  const hasActiveFilters = !!(
+    typeFilter ||
+    statusFilter ||
+    fromDate ||
+    toDate ||
+    accountIds.length
+  );
 
-	const clearFilters = () => {
-		setTypeFilter('');
-		setStatusFilter('');
-		setFromDate(null);
-		setToDate(null);
-		setAccountIds([]);
-		resetPage();
-	};
+  const clearFilters = () => {
+    setTypeFilter('');
+    setStatusFilter('');
+    setFromDate(null);
+    setToDate(null);
+    setAccountIds([]);
+    resetPage();
+  };
 
-	// -------------------------------------------------------------------------
-	// DataGrid columns
-	// -------------------------------------------------------------------------
-	const columns = useMemo<GridColDef<Transaction>[]>(
-		() => [
-			{
-				field: 'name',
-				headerName: 'Name',
-				flex: 1,
-				minWidth: 160,
-			},
-			{
-				field: 'type',
-				headerName: 'Type',
-				width: 110,
-				renderCell: ({ row }) => (
-					<Typography variant="body_smallRegular" sx={{ textTransform: 'capitalize' }}>
-						{row.type}
-					</Typography>
-				),
-			},
-			{
-				field: 'amount',
-				headerName: 'Amount',
-				width: 130,
-				renderCell: ({ row }) => {
-					const { text, color } = formatTransactionAmount(row);
-					return (
-						<Typography variant="body_mediumBold" sx={{ color }}>
-							{text}
-						</Typography>
-					);
-				},
-			},
-			{
-				field: 'status',
-				headerName: 'Status',
-				width: 120,
-				renderCell: ({ row }) => <StatusChip status={row.status} />,
-			},
-			{
-				field: 'fromAccount',
-				headerName: 'From',
-				width: 150,
-				renderCell: ({ row }) => (
-					<Typography variant="body_smallRegular">{row.fromAccount?.name ?? '—'}</Typography>
-				),
-			},
-			{
-				field: 'toAccount',
-				headerName: 'To',
-				width: 150,
-				renderCell: ({ row }) => (
-					<Typography variant="body_smallRegular">{row.toAccount?.name ?? '—'}</Typography>
-				),
-			},
-			{
-				field: 'description',
-				headerName: 'Description',
-				flex: 1,
-				minWidth: 140,
-				renderCell: ({ row }) => (
-					<Typography
-						variant="body_smallRegular"
-						color={row.description ? 'text.primary' : 'text.disabled'}
-						sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-					>
-						{row.description ?? 'No description'}
-					</Typography>
-				),
-			},
-			{
-				field: 'createdAt',
-				headerName: 'Date',
-				width: 130,
-				renderCell: ({ row }) => (
-					<Typography variant="body_smallRegular">
-						{dayjs(row.createdAt).format('MMM D, YYYY')}
-					</Typography>
-				),
-			},
-			{
-				field: 'edit',
-				headerName: '',
-				width: 52,
-				sortable: false,
-				renderCell: ({ row }) => (
-					<IconButton size="small" onClick={() => setEditTx(row)} aria-label="edit description">
-						<EditIcon fontSize="small" />
-					</IconButton>
-				),
-			},
-		],
-		[],
-	);
+  // -------------------------------------------------------------------------
+  // DataGrid columns
+  // -------------------------------------------------------------------------
+  const columns = useMemo<GridColDef<Transaction>[]>(
+    () => [
+      {
+        field: 'name',
+        headerName: 'Name',
+        flex: 1,
+        minWidth: 160,
+      },
+      {
+        field: 'type',
+        headerName: 'Type',
+        width: 110,
+        renderCell: ({ row }) => (
+          <Typography variant="body_smallRegular" sx={{ textTransform: 'capitalize' }}>
+            {row.type}
+          </Typography>
+        ),
+      },
+      {
+        field: 'amount',
+        headerName: 'Amount',
+        width: 130,
+        renderCell: ({ row }) => {
+          const { text, color } = formatTransactionAmount(row);
+          return (
+            <Typography variant="body_mediumBold" sx={{ color }}>
+              {text}
+            </Typography>
+          );
+        },
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        width: 120,
+        renderCell: ({ row }) => <StatusChip status={row.status} />,
+      },
+      {
+        field: 'fromAccount',
+        headerName: 'From',
+        width: 150,
+        renderCell: ({ row }) => (
+          <Typography variant="body_smallRegular">{row.fromAccount?.name ?? '—'}</Typography>
+        ),
+      },
+      {
+        field: 'toAccount',
+        headerName: 'To',
+        width: 150,
+        renderCell: ({ row }) => (
+          <Typography variant="body_smallRegular">{row.toAccount?.name ?? '—'}</Typography>
+        ),
+      },
+      {
+        field: 'description',
+        headerName: 'Description',
+        flex: 1,
+        minWidth: 140,
+        renderCell: ({ row }) => (
+          <Typography
+            variant="body_smallRegular"
+            color={row.description ? 'text.primary' : 'text.disabled'}
+            sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          >
+            {row.description ?? 'No description'}
+          </Typography>
+        ),
+      },
+      {
+        field: 'createdAt',
+        headerName: 'Date',
+        width: 130,
+        renderCell: ({ row }) => (
+          <Typography variant="body_smallRegular">
+            {dayjs(row.createdAt).format('MMM D, YYYY')}
+          </Typography>
+        ),
+      },
+      {
+        field: 'edit',
+        headerName: '',
+        width: 52,
+        sortable: false,
+        renderCell: ({ row }) => (
+          <IconButton size="small" onClick={() => setEditTx(row)} aria-label="edit description">
+            <EditIcon fontSize="small" />
+          </IconButton>
+        ),
+      },
+    ],
+    [],
+  );
 
-	// -------------------------------------------------------------------------
-	// Render
-	// -------------------------------------------------------------------------
-	return (
-		<>
-			<Stack spacing={3}>
-				{/* Page header */}
-				<Stack direction="row" alignItems="center" justifyContent="space-between">
-					<Typography variant="title_medium">Transactions</Typography>
-					<Button
-						variant="contained"
-						startIcon={<AddIcon />}
-						onClick={() => setCreateOpen(true)}
-					>
-						New Transaction
-					</Button>
-				</Stack>
+  // -------------------------------------------------------------------------
+  // Render
+  // -------------------------------------------------------------------------
+  return (
+    <>
+      <Stack spacing={3}>
+        {/* Page header */}
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="title_medium">Transactions</Typography>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
+            New Transaction
+          </Button>
+        </Stack>
 
-				{/* Filter bar */}
-				<Paper sx={{ p: 2 }}>
-					<Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
-						{/* Account — multiple selection */}
-						<FormControl size="small" sx={{ minWidth: 180 }}>
-							<InputLabel>Accounts</InputLabel>
-							<Select
-								multiple
-								value={accountIds}
-								label="Accounts"
-								onChange={(e) => {
-									setAccountIds(e.target.value as string[]);
-									resetPage();
-								}}
-								renderValue={(selected) => {
-									if (selected.length === 0) return 'All Accounts';
-									if (selected.length === 1) {
-										return accounts.find((a) => a.id === selected[0])?.name ?? selected[0];
-									}
-									return `${selected.length} accounts`;
-								}}
-							>
-								{accounts.map((acc) => (
-									<MenuItem key={acc.id} value={acc.id}>
-										<Checkbox checked={accountIds.includes(acc.id)} size="small" />
-										<ListItemText primary={acc.name} />
-									</MenuItem>
-								))}
-							</Select>
-						</FormControl>
+        {/* Filter bar */}
+        <Paper sx={{ p: 2 }}>
+          <Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
+            {/* Account — multiple selection */}
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Accounts</InputLabel>
+              <Select
+                multiple
+                value={accountIds}
+                label="Accounts"
+                onChange={(e) => {
+                  setAccountIds(e.target.value as string[]);
+                  resetPage();
+                }}
+                renderValue={(selected) => {
+                  if (selected.length === 0) return 'All Accounts';
+                  if (selected.length === 1) {
+                    return accounts.find((a) => a.id === selected[0])?.name ?? selected[0];
+                  }
+                  return `${selected.length} accounts`;
+                }}
+              >
+                {accounts.map((acc) => (
+                  <MenuItem key={acc.id} value={acc.id}>
+                    <Checkbox checked={accountIds.includes(acc.id)} size="small" />
+                    <ListItemText primary={acc.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-						{/* Type */}
-						<FormControl size="small" sx={{ minWidth: 130 }}>
-							<InputLabel>Type</InputLabel>
-							<Select
-								value={typeFilter}
-								label="Type"
-								onChange={(e) => {
-									setTypeFilter(e.target.value as TransactionType | '');
-									resetPage();
-								}}
-							>
-								<MenuItem value="">All Types</MenuItem>
-								<MenuItem value="deposit">Deposit</MenuItem>
-								<MenuItem value="withdraw">Withdraw</MenuItem>
-								<MenuItem value="transfer">Transfer</MenuItem>
-							</Select>
-						</FormControl>
+            {/* Type */}
+            <FormControl size="small" sx={{ minWidth: 130 }}>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={typeFilter}
+                label="Type"
+                onChange={(e) => {
+                  setTypeFilter(e.target.value as TransactionType | '');
+                  resetPage();
+                }}
+              >
+                <MenuItem value="">All Types</MenuItem>
+                <MenuItem value="deposit">Deposit</MenuItem>
+                <MenuItem value="withdraw">Withdraw</MenuItem>
+                <MenuItem value="transfer">Transfer</MenuItem>
+              </Select>
+            </FormControl>
 
-						{/* Status */}
-						<FormControl size="small" sx={{ minWidth: 130 }}>
-							<InputLabel>Status</InputLabel>
-							<Select
-								value={statusFilter}
-								label="Status"
-								onChange={(e) => {
-									setStatusFilter(e.target.value as TransactionStatus | '');
-									resetPage();
-								}}
-							>
-								<MenuItem value="">All Statuses</MenuItem>
-								<MenuItem value="success">Success</MenuItem>
-								<MenuItem value="pending">Pending</MenuItem>
-								<MenuItem value="failed">Failed</MenuItem>
-							</Select>
-						</FormControl>
+            {/* Status */}
+            <FormControl size="small" sx={{ minWidth: 130 }}>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={(e) => {
+                  setStatusFilter(e.target.value as TransactionStatus | '');
+                  resetPage();
+                }}
+              >
+                <MenuItem value="">All Statuses</MenuItem>
+                <MenuItem value="success">Success</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="failed">Failed</MenuItem>
+              </Select>
+            </FormControl>
 
-						{/* From date */}
-						<DatePicker
-							label="From"
-							value={fromDate}
-							onChange={(date) => {
-								setFromDate(date);
-								resetPage();
-							}}
-							slotProps={{ textField: { size: 'small' } }}
-						/>
+            {/* From date */}
+            <DatePicker
+              label="From"
+              value={fromDate}
+              onChange={(date) => {
+                setFromDate(date);
+                resetPage();
+              }}
+              slotProps={{ textField: { size: 'small' } }}
+            />
 
-						{/* To date */}
-						<DatePicker
-							label="To"
-							value={toDate}
-							onChange={(date) => {
-								setToDate(date);
-								resetPage();
-							}}
-							slotProps={{ textField: { size: 'small' } }}
-						/>
+            {/* To date */}
+            <DatePicker
+              label="To"
+              value={toDate}
+              onChange={(date) => {
+                setToDate(date);
+                resetPage();
+              }}
+              slotProps={{ textField: { size: 'small' } }}
+            />
 
-						{/* Clear filters */}
-						{hasActiveFilters && (
-							<Button
-								variant="outlined"
-								size="small"
-								color="inherit"
-								startIcon={<FilterListOffIcon />}
-								onClick={clearFilters}
-							>
-								Clear
-							</Button>
-						)}
-					</Stack>
-				</Paper>
+            {/* Clear filters */}
+            {hasActiveFilters && (
+              <Button
+                variant="outlined"
+                size="small"
+                color="inherit"
+                startIcon={<FilterListOffIcon />}
+                onClick={clearFilters}
+              >
+                Clear
+              </Button>
+            )}
+          </Stack>
+        </Paper>
 
-				{/* DataGrid */}
-				<Box sx={{ width: '100%' }}>
-					<DataGrid
-						rows={rows}
-						columns={columns}
-						rowCount={rowCount}
-						loading={isLoading}
-						paginationMode="server"
-						paginationModel={paginationModel}
-						onPaginationModelChange={setPaginationModel}
-						pageSizeOptions={[10, 25, 50]}
-						disableRowSelectionOnClick
-						autoHeight
-						sx={{
-							bgcolor: 'background.paper',
-							borderRadius: 2,
-							'& .MuiDataGrid-cell': { alignItems: 'center' },
-						}}
-					/>
-				</Box>
-			</Stack>
+        {/* DataGrid */}
+        <Box sx={{ width: '100%' }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            rowCount={rowCount}
+            loading={isLoading}
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[10, 25, 50]}
+            disableRowSelectionOnClick
+            autoHeight
+            sx={{
+              bgcolor: 'background.paper',
+              borderRadius: 2,
+              '& .MuiDataGrid-cell': { alignItems: 'center' },
+            }}
+          />
+        </Box>
+      </Stack>
 
-			<CreateTransactionModal open={createOpen} onClose={() => setCreateOpen(false)} />
-			<EditDescriptionModal
-				open={!!editTx}
-				onClose={() => setEditTx(null)}
-				transaction={editTx}
-			/>
-		</>
-	);
+      <CreateTransactionModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      <EditDescriptionModal open={!!editTx} onClose={() => setEditTx(null)} transaction={editTx} />
+    </>
+  );
 };
