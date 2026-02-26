@@ -17,6 +17,7 @@ import { StatusChip } from '@/components/common/StatusChip';
 import { CreateTransactionModal } from '@/components/transactions/CreateTransactionModal';
 import { StatCard } from '@/components/widgets/StatCard';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
+import { useIsAdmin } from '@/hooks/useCurrentUser';
 import { useTransactions } from '@/hooks/useTransactions';
 import { colors } from '@/theme/colors';
 import { formatTransactionAmount } from '@/utils/transaction';
@@ -27,6 +28,8 @@ import { formatTransactionAmount } from '@/utils/transaction';
 
 export const DashboardPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const isAdmin = useIsAdmin();
 
   const { data: accountsResponse, isLoading: accountsLoading } = useBankAccounts();
   const { data: txResponse, isLoading: txLoading } = useTransactions({
@@ -49,9 +52,11 @@ export const DashboardPage = () => {
         {/* Page header */}
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="title_medium">Overview</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setModalOpen(true)}>
-            New Transaction
-          </Button>
+          {!isAdmin && (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setModalOpen(true)}>
+              New Transaction
+            </Button>
+          )}
         </Stack>
 
         {/* Stat cards */}
@@ -203,7 +208,7 @@ export const DashboardPage = () => {
         </Grid>
       </Stack>
 
-      <CreateTransactionModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      {!isAdmin && <CreateTransactionModal open={modalOpen} onClose={() => setModalOpen(false)} />}
     </>
   );
 };

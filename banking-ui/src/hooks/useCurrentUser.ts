@@ -25,3 +25,9 @@ export const useCurrentUser = () => {
     staleTime: 5 * 60 * 1000, // 5 min — role/status rarely changes
   });
 };
+
+/** Convenience hook — returns true when the current user has the admin role. */
+export const useIsAdmin = () => {
+  const { data: currentUser } = useCurrentUser();
+  return currentUser?.role === 'admin';
+};
