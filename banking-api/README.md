@@ -72,6 +72,11 @@ CLERK_SECRET_KEY=
 CLERK_WEBHOOK_SIGNING_SECRET=
 ```
 
+3. Start ngrok
+```bash
+ngrok http {PORT}
+```
+
 4. Start the server
 ```bash
 # Development (auto-reload)
