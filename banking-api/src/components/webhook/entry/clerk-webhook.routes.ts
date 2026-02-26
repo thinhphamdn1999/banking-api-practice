@@ -4,7 +4,7 @@ import { clerkWebhookRawBodyMiddleware } from '@/common/middleware/clerk-webhook
 
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
 import { ClerkIdentityProvider } from '@/components/user/domain/external/clerk-identity.provider';
-import { ClerkWebhook } from '@/components/user/webhooks/clerk.webhook';
+import { ClerkWebhook } from '@/components/user/webhooks/clerk-webhook';
 
 import { ClerkWebhookController } from './clerk-webhook.controller';
 
