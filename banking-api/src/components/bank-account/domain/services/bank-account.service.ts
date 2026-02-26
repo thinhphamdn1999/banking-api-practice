@@ -38,8 +38,11 @@ export class BankAccountService {
     return { data: bankAccounts };
   }
 
-  async getBankAccountById(bankAccountId: string) {
-    const bankAccount = await this.bankAccountRepository.findById(bankAccountId);
+  async getBankAccountById(bankAccountId: string, userId?: string) {
+    const bankAccount = userId
+      ? await this.bankAccountRepository.findBankAccountByUserIdAndBankId(userId, bankAccountId)
+      : await this.bankAccountRepository.findById(bankAccountId);
+
     if (!bankAccount) {
       return { error: ERROR_CODES.ITEM_NOT_FOUND };
     }

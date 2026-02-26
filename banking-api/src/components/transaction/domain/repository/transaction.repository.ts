@@ -51,7 +51,6 @@ export class TransactionRepository extends BaseRepository<Transaction> {
 
     const hasAccountFilter = filter?.bankAccountIds && filter.bankAccountIds.length > 0;
 
-    // no ownership restriction
     if (isAdmin) {
       if (hasAccountFilter) {
         where.push(
@@ -62,8 +61,6 @@ export class TransactionRepository extends BaseRepository<Transaction> {
         where.push(baseCondition);
       }
     } else {
-      // restrict by ownership
-
       if (!userId) {
         where.push({ id: '__never_match__' });
       } else {
@@ -112,17 +109,20 @@ export class TransactionRepository extends BaseRepository<Transaction> {
   }
 
   async findByIdWithRelation(id: string, userId: string, isAdmin: boolean) {
-    const qb = this.getRepository()
-      .createQueryBuilder('t')
-      .leftJoinAndSelect('t.fromAccount', 'from')
-      .leftJoinAndSelect('t.toAccount', 'to')
-      .where('t.id = :transactionId', { id });
+    const where: FindOptionsWhere<Transaction>[] = isAdmin
+      ? [{ id }]
+      : [
+          { id, fromAccount: { user: { id: userId } } },
+          { id, toAccount: { user: { id: userId } } },
+        ];
 
-    if (!isAdmin) {
-      qb.andWhere('(from.userId = :userId OR to.userId = :userId)', { userId });
-    }
-
-    return qb.getOne();
+    return this.repository.findOne({
+      where,
+      relations: {
+        fromAccount: true,
+        toAccount: true,
+      },
+    });
   }
 
   async findByIdempotencyKey(idempotencyKey: string, manager?: EntityManager) {
