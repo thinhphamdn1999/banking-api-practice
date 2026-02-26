@@ -3,14 +3,14 @@ import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { bankAccountsService } from '@/services/bank-accounts.service';
-import type { PaginationParams } from '@/types/api';
+import type { GetBankAccountsParams } from '@/services/bank-accounts.service';
 import { getApiErrorMessage } from '@/utils/error';
 
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------
 
-export const useBankAccounts = (params?: PaginationParams) =>
+export const useBankAccounts = (params?: GetBankAccountsParams) =>
   useQuery({
     queryKey: [...QUERY_KEYS.BANK_ACCOUNTS, params],
     queryFn: () => bankAccountsService.getAll(params),

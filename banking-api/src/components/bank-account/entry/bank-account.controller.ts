@@ -21,11 +21,13 @@ export class BankAccountController {
 
   async getBankAccounts(req: Request, res: Response) {
     try {
-      const { page, limit } = req.query;
+      const { page, limit, userId: queryUserId } = req.query;
       const { id: userId, role } = req.user ?? {};
 
       const filter: FilterOptions = {
-        userId: role !== UserRole.ADMIN ? userId : undefined,
+        // Non-admin: always scoped to their own accounts.
+        // Admin: optionally filter by a specific userId passed in the query string.
+        userId: role !== UserRole.ADMIN ? userId : (queryUserId as string | undefined),
       };
 
       const result = await this.bankAccountService.findBankAccounts(
