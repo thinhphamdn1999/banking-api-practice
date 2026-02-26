@@ -4,6 +4,8 @@ import type { Express } from 'express';
 
 import { TestHelper } from '@/common/configs/test/dbInstance';
 
+import { UserRole } from '@/components/user/types/user';
+
 import { User } from '@/components/user/domain/entities/user.entity';
 
 describe('User Routes', () => {
@@ -28,41 +30,33 @@ describe('User Routes', () => {
   });
 
   const seedUser = async () => {
-    const users = userRepo.create({
-      clerkUserId: 'clerk_test_user_1',
-      email: 'test@example.com',
-    });
+    const users = userRepo.create([
+      {
+        clerkUserId: 'test_user_id',
+        email: 'test@example.com',
+        role: UserRole.ADMIN,
+      },
+      {
+        clerkUserId: 'test_user_id_2',
+        email: 'test1@example.com',
+        role: UserRole.USER,
+      },
+    ]);
     return userRepo.save(users);
   };
 
   describe('GET /api/users', () => {
-    it('should return [] when no user', async () => {
-      const res = await request(app).get('/api/users');
-
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual({
-        data: [],
-        metadata: {
-          currentPage: 1,
-          limit: 20,
-          offset: 0,
-          pageCount: 0,
-          totalCount: 0,
-        },
-      });
-    });
-
     it('should return list of users', async () => {
       await seedUser();
       const res = await request(app).get('/api/users');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(Array.isArray(res.body.data)).toBe(true);
-      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data).toHaveLength(2);
       expect(res.body.data[0]).toEqual(
         expect.objectContaining({
           email: 'test@example.com',
-          clerkUserId: 'clerk_test_user_1',
+          clerkUserId: 'test_user_id',
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
@@ -74,7 +68,7 @@ describe('User Routes', () => {
           limit: 20,
           offset: 0,
           pageCount: 1,
-          totalCount: 1,
+          totalCount: 2,
         }),
       );
     });
@@ -85,11 +79,11 @@ describe('User Routes', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(Array.isArray(res.body.data)).toBe(true);
-      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data).toHaveLength(2);
       expect(res.body.data[0]).toEqual(
         expect.objectContaining({
           email: 'test@example.com',
-          clerkUserId: 'clerk_test_user_1',
+          clerkUserId: 'test_user_id',
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
@@ -101,7 +95,7 @@ describe('User Routes', () => {
           limit: 10,
           offset: 0,
           pageCount: 1,
-          totalCount: 1,
+          totalCount: 2,
         }),
       );
     });
@@ -109,6 +103,7 @@ describe('User Routes', () => {
 
   describe('GET /api/users/:id', () => {
     it('should return 404 if user not found', async () => {
+      await seedUser();
       const res = await request(app).get('/api/users/non-existing-id');
 
       expect(res.status).toBe(404);
@@ -118,15 +113,15 @@ describe('User Routes', () => {
     it('should return user if found', async () => {
       const user = await seedUser();
 
-      const res = await request(app).get(`/api/users/${user.id}`);
+      const res = await request(app).get(`/api/users/${user[1].id}`);
 
       expect(res.status).toBe(200);
 
       expect(res.body).toEqual(
         expect.objectContaining({
-          id: user.id,
-          email: 'test@example.com',
-          clerkUserId: 'clerk_test_user_1',
+          id: user[1].id,
+          email: 'test1@example.com',
+          clerkUserId: 'test_user_id_2',
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
         }),
@@ -136,6 +131,7 @@ describe('User Routes', () => {
 
   describe('POST /api/users/:id/de-active', () => {
     it('should return 404 if user not found', async () => {
+      await seedUser();
       const res = await request(app).post('/api/users/non-existing-id/de-active');
 
       expect(res.status).toBe(404);
@@ -145,18 +141,18 @@ describe('User Routes', () => {
     it('should deactivate user successfully', async () => {
       const user = await seedUser();
 
-      const res = await request(app).post(`/api/users/${user.id}/de-active`);
+      const res = await request(app).post(`/api/users/${user[1].id}/de-active`);
 
       expect(res.status).toBe(200);
 
       expect(res.body).toEqual(
         expect.objectContaining({
-          id: user.id,
+          id: user[1].id,
           status: 'de-active',
         }),
       );
 
-      const updatedUser = await userRepo.findOneBy({ id: user.id });
+      const updatedUser = await userRepo.findOneBy({ id: user[1].id });
       expect(updatedUser?.status).toBe('de-active');
     });
   });

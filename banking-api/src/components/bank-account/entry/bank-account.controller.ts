@@ -5,6 +5,7 @@ import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/cons
 import HttpStatusCode from '@/common/constants/http-status-code';
 
 import { FilterOptions } from '@/components/bank-account/types/bank-account';
+import { UserRole } from '@/components/user/types/user';
 
 import { BankAccountService } from '@/components/bank-account/domain/services/bank-account.service';
 
@@ -21,10 +22,10 @@ export class BankAccountController {
   async getBankAccounts(req: Request, res: Response) {
     try {
       const { page, limit } = req.query;
-      const { id: userId } = req.user ?? {};
+      const { id: userId, role } = req.user ?? {};
 
       const filter: FilterOptions = {
-        userId,
+        userId: role !== UserRole.ADMIN ? userId : undefined,
       };
 
       const result = await this.bankAccountService.findBankAccounts(
@@ -52,7 +53,11 @@ export class BankAccountController {
 
   async getBankAccountById(req: Request, res: Response) {
     try {
-      const result = await this.bankAccountService.getBankAccountById(req.params.id as string);
+      const { id: userId, role } = req.user ?? {};
+      const result = await this.bankAccountService.getBankAccountById(
+        req.params.id as string,
+        role !== UserRole.ADMIN ? userId : undefined,
+      );
 
       if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
