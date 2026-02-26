@@ -189,7 +189,9 @@ export const AdminUserDetailPage = () => {
           <IconButton size="small" onClick={() => navigate(ROUTES.ADMIN_USERS)} aria-label="back">
             <ArrowBackIcon />
           </IconButton>
-          <Typography variant="title_medium">{clerkUser?.fullName}</Typography>
+          <Typography variant="title_medium">
+            {[user?.firstName, user?.lastName].filter(Boolean).join(' ')}
+          </Typography>
         </Stack>
 
         {/* User info card */}

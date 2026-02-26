@@ -2,9 +2,14 @@ import { Router } from 'express';
 
 import { getDataSource } from '@/common/configs/db';
 
+import { requireRole } from '@/common/middleware/require-role';
+
+import { UserRole } from '@/components/user/types/user';
+
 import { TransactionRepository } from '@/components/transaction/domain/repository/transaction.repository';
 import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
 import { TransactionService } from '@/components/transaction/domain/services/transaction.service';
+
 import { TransactionController } from '@/components/transaction/entry/transaction.controller';
 
 const transactionRouter = Router();
@@ -20,7 +25,7 @@ const controller = new TransactionController(transactionService);
 
 transactionRouter.get('/', controller.getTransactions);
 transactionRouter.get('/:id', controller.getTransactionById);
-transactionRouter.post('/', controller.createTransaction);
-transactionRouter.put('/:id', controller.updateTransaction);
+transactionRouter.post('/', requireRole(UserRole.USER), controller.createTransaction);
+transactionRouter.put('/:id', requireRole(UserRole.USER), controller.updateTransaction);
 
 export default transactionRouter;
