@@ -188,7 +188,11 @@ export const TransactionsPage = () => {
               width: 52,
               sortable: false,
               renderCell: ({ row }: { row: Transaction }) => (
-                <IconButton size="small" onClick={() => setEditTx(row)} aria-label="edit description">
+                <IconButton
+                  size="small"
+                  onClick={() => setEditTx(row)}
+                  aria-label="edit description"
+                >
                   <EditIcon fontSize="small" />
                 </IconButton>
               ),
@@ -344,7 +348,11 @@ export const TransactionsPage = () => {
       {!isAdmin && (
         <>
           <CreateTransactionModal open={createOpen} onClose={() => setCreateOpen(false)} />
-          <EditDescriptionModal open={!!editTx} onClose={() => setEditTx(null)} transaction={editTx} />
+          <EditDescriptionModal
+            open={!!editTx}
+            onClose={() => setEditTx(null)}
+            transaction={editTx}
+          />
         </>
       )}
     </>

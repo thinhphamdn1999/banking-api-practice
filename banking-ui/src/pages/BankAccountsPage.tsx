@@ -59,7 +59,11 @@ export const BankAccountsPage = () => {
               No bank accounts yet
             </Typography>
             {!isAdmin && (
-              <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateOpen(true)}
+              >
                 Add your first account
               </Button>
             )}

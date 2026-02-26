@@ -1,5 +1,9 @@
 import { Router } from 'express';
 
+import { requireRole } from '@/common/middleware/require-role';
+
+import { UserRole } from '@/components/user/types/user';
+
 import { BankAccountService } from '@/components/bank-account/domain/services/bank-account.service';
 import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
@@ -15,7 +19,7 @@ const controller = new BankAccountController(bankAccountService);
 
 bankAccountRouter.get('/', controller.getBankAccounts);
 bankAccountRouter.get('/:id', controller.getBankAccountById);
-bankAccountRouter.post('/', controller.createBankAccount);
-bankAccountRouter.put('/:id', controller.updateBankAccount);
+bankAccountRouter.post('/', requireRole(UserRole.USER), controller.createBankAccount);
+bankAccountRouter.put('/:id', requireRole(UserRole.USER), controller.updateBankAccount);
 
 export default bankAccountRouter;
