@@ -1,11 +1,14 @@
 import { Router } from 'express';
 
-import { UserController } from './user.controller';
-import { UserService } from '../domain/services/user.service';
-import { UserRepository } from '../domain/repository/user.repository';
-import { ClerkIdentityProvider } from '../domain/external/clerk-identity.provider';
-import { UserRole } from '../types/user';
 import { requireRole } from '@/common/middleware/require-role';
+
+import { UserRole } from '@/components/user/types/user';
+
+import { UserService } from '@/components/user/domain/services/user.service';
+import { UserRepository } from '@/components/user/domain/repository/user.repository';
+import { ClerkIdentityProvider } from '@/components/user/domain/external/clerk-identity.provider';
+
+import { UserController } from '@/components/user/entry/user.controller';
 
 const userRouter = Router();
 

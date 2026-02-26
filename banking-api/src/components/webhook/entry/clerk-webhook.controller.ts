@@ -5,7 +5,7 @@ import { verifyWebhook } from '@clerk/express/webhooks';
 import HttpStatusCode from '@/common/constants/http-status-code';
 import { ERROR_CODES } from '@/common/constants/errors';
 
-import { ClerkWebhook } from '@/components/user/webhooks/clerk.webhook';
+import { ClerkWebhook } from '@/components/user/webhooks/clerk-webhook';
 
 import { createErrorResponse } from '@/common/utils/error-response';
 

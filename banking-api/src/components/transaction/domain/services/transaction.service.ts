@@ -13,7 +13,7 @@ import {
 } from '@/components/transaction/types/transaction';
 
 import { TransactionRepository } from '@/components/transaction/domain/repository/transaction.repository';
-import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
+import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account.repository';
 import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
 
 export class TransactionService {

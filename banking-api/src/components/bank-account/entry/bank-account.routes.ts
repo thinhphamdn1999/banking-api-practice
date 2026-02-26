@@ -5,7 +5,7 @@ import { requireRole } from '@/common/middleware/require-role';
 import { UserRole } from '@/components/user/types/user';
 
 import { BankAccountService } from '@/components/bank-account/domain/services/bank-account.service';
-import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
+import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account.repository';
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
 
 import { BankAccountController } from './bank-account.controller';

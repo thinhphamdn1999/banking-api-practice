@@ -1,7 +1,8 @@
+import { UserStatus } from '@/components/user/types/user';
+
 import { IdentityProvider } from '@/components/user/domain/external/identity-provider';
 
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
-import { UserStatus } from '../types/user';
 
 export class ClerkWebhook {
   constructor(

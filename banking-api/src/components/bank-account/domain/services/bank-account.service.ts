@@ -8,7 +8,7 @@ import {
 import { ERROR_CODES } from '@/common/constants/errors';
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
 
-import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account-repository';
+import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account.repository';
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
 
 export class BankAccountService {
