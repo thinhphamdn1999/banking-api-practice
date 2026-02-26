@@ -25,12 +25,15 @@ import { StatusChip } from '@/components/common/StatusChip';
 import { CreateTransactionModal } from '@/components/transactions/CreateTransactionModal';
 import { EditDescriptionModal } from '@/components/transactions/EditDescriptionModal';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
+import { useIsAdmin } from '@/hooks/useCurrentUser';
 import { useTransactions } from '@/hooks/useTransactions';
 import { formatTransactionAmount } from '@/utils/transaction';
 import type { Transaction, TransactionStatus, TransactionType } from '@/types/transaction';
 
 export const TransactionsPage = () => {
   const [searchParams] = useSearchParams();
+
+  const isAdmin = useIsAdmin();
 
   // -------------------------------------------------------------------------
   // Filter state — accountIds can be pre-populated from URL ?accountId=...
@@ -177,19 +180,23 @@ export const TransactionsPage = () => {
           </Typography>
         ),
       },
-      {
-        field: 'edit',
-        headerName: '',
-        width: 52,
-        sortable: false,
-        renderCell: ({ row }) => (
-          <IconButton size="small" onClick={() => setEditTx(row)} aria-label="edit description">
-            <EditIcon fontSize="small" />
-          </IconButton>
-        ),
-      },
+      ...(!isAdmin
+        ? [
+            {
+              field: 'edit',
+              headerName: '',
+              width: 52,
+              sortable: false,
+              renderCell: ({ row }: { row: Transaction }) => (
+                <IconButton size="small" onClick={() => setEditTx(row)} aria-label="edit description">
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              ),
+            } satisfies GridColDef<Transaction>,
+          ]
+        : []),
     ],
-    [],
+    [isAdmin],
   );
 
   // -------------------------------------------------------------------------
@@ -201,9 +208,11 @@ export const TransactionsPage = () => {
         {/* Page header */}
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="title_medium">Transactions</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
-            New Transaction
-          </Button>
+          {!isAdmin && (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
+              New Transaction
+            </Button>
+          )}
         </Stack>
 
         {/* Filter bar */}
@@ -332,8 +341,12 @@ export const TransactionsPage = () => {
         </Box>
       </Stack>
 
-      <CreateTransactionModal open={createOpen} onClose={() => setCreateOpen(false)} />
-      <EditDescriptionModal open={!!editTx} onClose={() => setEditTx(null)} transaction={editTx} />
+      {!isAdmin && (
+        <>
+          <CreateTransactionModal open={createOpen} onClose={() => setCreateOpen(false)} />
+          <EditDescriptionModal open={!!editTx} onClose={() => setEditTx(null)} transaction={editTx} />
+        </>
+      )}
     </>
   );
 };

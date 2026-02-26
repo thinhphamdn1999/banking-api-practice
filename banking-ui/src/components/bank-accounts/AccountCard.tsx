@@ -21,7 +21,7 @@ import type { BankAccount } from '@/types/bank-account';
 
 interface AccountCardProps {
   account: BankAccount;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -49,9 +49,11 @@ export const AccountCard = ({ account, onEdit }: AccountCardProps) => {
         >
           <AccountBalanceIcon />
         </Box>
-        <IconButton size="small" onClick={onEdit} aria-label="edit account">
-          <EditIcon fontSize="small" />
-        </IconButton>
+        {onEdit && (
+          <IconButton size="small" onClick={onEdit} aria-label="edit account">
+            <EditIcon fontSize="small" />
+          </IconButton>
+        )}
       </Stack>
 
       {/* Account name */}
