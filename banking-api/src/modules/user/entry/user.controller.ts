@@ -7,9 +7,9 @@ import {
   DEFAULT_PAGINATION_PAGE,
 } from '@/common/constants/pagination';
 
-import { UserService } from '@/modules/user/domain/services/user.service';
-
 import { createErrorResponse } from '@/common/utils/error-response';
+
+import { UserService } from '@/modules/user/domain/services/user.service';
 
 export class UserController {
   constructor(private readonly userService: UserService) {
