@@ -10,9 +10,9 @@ import HttpStatusCode from '@/common/constants/http-status-code';
 import { FilterOptions } from '@/modules/bank-account/types/bank-account';
 import { UserRole } from '@/modules/user/types/user';
 
-import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
-
 import { createErrorResponse } from '@/common/utils/error-response';
+
+import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
 
 export class BankAccountController {
   constructor(private readonly bankAccountService: BankAccountService) {
