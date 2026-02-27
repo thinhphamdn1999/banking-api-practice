@@ -72,12 +72,7 @@ CLERK_SECRET_KEY=
 CLERK_WEBHOOK_SIGNING_SECRET=
 ```
 
-3. Start ngrok
-```bash
-ngrok http {PORT}
-```
-
-4. Start the server
+3. Start the server
 ```bash
 # Development (auto-reload)
 pnpm run dev
@@ -85,6 +80,11 @@ pnpm run dev
 # Production
 pnpm run build
 pnpm start
+```
+
+4. Start ngrok (IMPORTANT: This step will help sync data between Clerk and local DB)
+```bash
+ngrok http {PORT}
 ```
 
 ## API Reference
