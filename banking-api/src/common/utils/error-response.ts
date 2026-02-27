@@ -21,6 +21,9 @@ export const createErrorResponse = ({ statusCode, message, errors }: ApiErrorInp
     [HttpStatusCode.NOT_FOUND]: {
       defaultMessage: 'Resource Not Found',
     },
+    [HttpStatusCode.FORBIDDEN]: {
+      defaultMessage: 'Forbidden',
+    },
     [HttpStatusCode.TOO_MANY_REQUESTS]: {
       defaultMessage: 'Too Many Request',
     },

@@ -18,6 +18,7 @@ const userService = new UserService(userRepository, identityProvider);
 const controller = new UserController(userService);
 
 userRouter.get('/', requireRole(UserRole.ADMIN), controller.getUsers);
+userRouter.get('/me', controller.getCurrentUser);
 userRouter.get('/:id', controller.getUserById);
 userRouter.post('/:id/de-active', requireRole(UserRole.ADMIN), controller.deActiveUser);
 userRouter.post('/:id/activate', requireRole(UserRole.ADMIN), controller.activateUser);
