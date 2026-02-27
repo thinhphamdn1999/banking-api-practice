@@ -15,6 +15,7 @@ import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { DataGrid } from '@mui/x-data-grid';
 import type { GridColDef } from '@mui/x-data-grid';
@@ -23,7 +24,7 @@ import dayjs from 'dayjs';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { StatusChip } from '@/components/common/StatusChip';
 import { ROUTES } from '@/constants/routes';
-import { useDeactivateUser, useUsers } from '@/hooks/useUsers';
+import { useActivateUser, useDeactivateUser, useUsers } from '@/hooks/useUsers';
 import type { User, UserStatus } from '@/types/user';
 
 // ---------------------------------------------------------------------------
@@ -80,6 +81,18 @@ export const AdminUsersPage = () => {
     if (!targetUser) return;
     await deactivate.mutateAsync(targetUser.id);
     setTargetUser(null);
+  };
+
+  // -------------------------------------------------------------------------
+  // Activate dialog
+  // -------------------------------------------------------------------------
+  const [activateTargetUser, setActivateTargetUser] = useState<User | null>(null);
+  const activate = useActivateUser();
+
+  const handleActivateConfirm = async () => {
+    if (!activateTargetUser) return;
+    await activate.mutateAsync(activateTargetUser.id);
+    setActivateTargetUser(null);
   };
 
   // -------------------------------------------------------------------------
@@ -189,11 +202,24 @@ export const AdminUsersPage = () => {
                 </IconButton>
               </Tooltip>
             )}
+
+            {row.status === 'de-active' && (
+              <Tooltip title="Activate user">
+                <IconButton
+                  size="small"
+                  color="success"
+                  onClick={() => setActivateTargetUser(row)}
+                  aria-label="activate user"
+                >
+                  <CheckCircleOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
           </Stack>
         ),
       },
     ],
-    [navigate, clerkUser?.id],
+    [navigate, clerkUser?.id, setTargetUser, setActivateTargetUser],
   );
 
   // -------------------------------------------------------------------------
@@ -276,6 +302,22 @@ export const AdminUsersPage = () => {
         isLoading={deactivate.isPending}
         onConfirm={handleDeactivateConfirm}
         onCancel={() => setTargetUser(null)}
+      />
+
+      {/* Activate confirm dialog */}
+      <ConfirmDialog
+        open={!!activateTargetUser}
+        title="Activate User"
+        description={
+          activateTargetUser
+            ? `Are you sure you want to activate "${getDisplayName(activateTargetUser)}"? They will regain access to the platform.`
+            : ''
+        }
+        confirmLabel="Activate"
+        confirmColor="success"
+        isLoading={activate.isPending}
+        onConfirm={handleActivateConfirm}
+        onCancel={() => setActivateTargetUser(null)}
       />
     </>
   );
