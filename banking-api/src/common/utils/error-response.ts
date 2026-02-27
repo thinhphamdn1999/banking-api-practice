@@ -34,8 +34,12 @@ export const createErrorResponse = ({ statusCode, message, errors }: ApiErrorInp
   const errorInfo =
     errorCodeStatusMap[statusCode] || errorCodeStatusMap[HttpStatusCode.INTERNAL_SERVER_ERROR];
 
+  const resolvedStatusCode = errorCodeStatusMap[statusCode]
+    ? statusCode
+    : HttpStatusCode.INTERNAL_SERVER_ERROR;
+
   const errorResponse: ApiError = {
-    statusCode,
+    statusCode: resolvedStatusCode,
     message: message || errorInfo.defaultMessage,
     errors,
   };

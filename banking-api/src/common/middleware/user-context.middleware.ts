@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from 'express';
 import HttpStatusCode from '@/common/constants/http-status-code';
 import { ERROR_CODES } from '@/common/constants/error';
 
-import { UserRepository } from '@/components/user/domain/repository/user.repository';
+import { UserRepository } from '@/modules/user/domain/repository/user.repository';
 
 import { createErrorResponse } from '@/common/utils/error-response';
 

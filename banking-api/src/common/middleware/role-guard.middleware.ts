@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from 'express';
 import HttpStatusCode from '@/common/constants/http-status-code';
 import { ERROR_CODES } from '@/common/constants/error';
 
-import type { UserRole } from '@/components/user/types/user';
+import type { UserRole } from '@/modules/user/types/user';
 
 import { createErrorResponse } from '@/common/utils/error-response';
 

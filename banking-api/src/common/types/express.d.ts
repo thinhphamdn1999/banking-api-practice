@@ -1,6 +1,6 @@
 import 'express';
 
-import type { UserRole, UserStatus } from '@/components/user/types/user';
+import type { UserRole, UserStatus } from '@/modules/user/types/user';
 
 declare global {
   namespace Express {
