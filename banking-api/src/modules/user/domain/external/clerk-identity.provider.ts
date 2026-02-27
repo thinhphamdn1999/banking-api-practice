@@ -25,4 +25,8 @@ export class ClerkIdentityProvider implements IdentityProvider {
   async lockUser(clerkUserId: string): Promise<void> {
     await clerkClient.users.lockUser(clerkUserId);
   }
+
+  async unlockUser(clerkUserId: string): Promise<void> {
+    await clerkClient.users.unlockUser(clerkUserId);
+  }
 }

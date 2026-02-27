@@ -20,5 +20,6 @@ const controller = new UserController(userService);
 userRouter.get('/', requireRole(UserRole.ADMIN), controller.getUsers);
 userRouter.get('/:id', controller.getUserById);
 userRouter.post('/:id/de-active', requireRole(UserRole.ADMIN), controller.deActiveUser);
+userRouter.post('/:id/activate', requireRole(UserRole.ADMIN), controller.activateUser);
 
 export default userRouter;

@@ -7,6 +7,7 @@ import { TestHelper } from '@/common/configs/test/database-instance';
 import { UserRole, UserStatus } from '@/modules/user/types/user';
 
 import { User } from '@/modules/user/domain/entities/user.entity';
+import { UserService } from '@/modules/user/domain/services/user.service';
 
 describe('User Routes', () => {
   let app: Express;
@@ -27,6 +28,10 @@ describe('User Routes', () => {
 
   beforeEach(async () => {
     await userRepo.clear();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   const seedUser = async () => {
@@ -176,6 +181,59 @@ describe('User Routes', () => {
 
       const updatedUser = await userRepo.findOneBy({ id: user[1].id });
       expect(updatedUser?.status).toBe('de-active');
+    });
+
+    it('should return 500 if an unexpected error occurs', async () => {
+      const user = await seedUser();
+      jest
+        .spyOn(UserService.prototype, 'deActiveUser')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).post(`/api/users/${user[1].id}/de-active`);
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+  });
+
+  describe('POST /api/users/:id/activate', () => {
+    it('should return 404 if user not found', async () => {
+      await seedUser();
+      const res = await request(app).post('/api/users/non-existing-id/activate');
+
+      expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty('errors');
+    });
+
+    it('should activate user successfully', async () => {
+      const user = await seedUser();
+      await userRepo.update({ id: user[1].id }, { status: UserStatus.DE_ACTIVE });
+
+      const res = await request(app).post(`/api/users/${user[1].id}/activate`);
+
+      expect(res.status).toBe(200);
+
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: user[1].id,
+          status: UserStatus.ACTIVE,
+        }),
+      );
+
+      const updatedUser = await userRepo.findOneBy({ id: user[1].id });
+      expect(updatedUser?.status).toBe(UserStatus.ACTIVE);
+    });
+
+    it('should return 500 if an unexpected error occurs', async () => {
+      const user = await seedUser();
+      jest
+        .spyOn(UserService.prototype, 'activateUser')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).post(`/api/users/${user[1].id}/activate`);
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
     });
   });
 });
