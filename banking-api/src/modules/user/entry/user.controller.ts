@@ -14,9 +14,38 @@ import { UserService } from '@/modules/user/domain/services/user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {
     this.getUsers = this.getUsers.bind(this);
+    this.getCurrentUser = this.getCurrentUser.bind(this);
     this.getUserById = this.getUserById.bind(this);
     this.deActiveUser = this.deActiveUser.bind(this);
     this.activateUser = this.activateUser.bind(this);
+  }
+
+  async getCurrentUser(req: Request, res: Response) {
+    try {
+      const result = await this.userService.getUserById(req.user!.id as string);
+
+      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+        return res.status(HttpStatusCode.NOT_FOUND).json(
+          createErrorResponse({
+            statusCode: HttpStatusCode.NOT_FOUND,
+            errors: [{ errCode: ERROR_CODES.ITEM_NOT_FOUND, message: 'Can not find user' }],
+          }),
+        );
+      }
+      return res.status(HttpStatusCode.OK).json(result.data);
+    } catch {
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        createErrorResponse({
+          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          errors: [
+            {
+              errCode: ERROR_CODES.GENERAL_EXCEPTION,
+              message: 'Failed to fetch current user',
+            },
+          ],
+        }),
+      );
+    }
   }
 
   async getUsers(req: Request, res: Response) {

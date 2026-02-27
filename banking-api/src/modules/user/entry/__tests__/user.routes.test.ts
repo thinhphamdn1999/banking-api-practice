@@ -128,6 +128,46 @@ describe('User Routes', () => {
     });
   });
 
+  describe('GET /api/users/me', () => {
+    it('should return the current authenticated user', async () => {
+      const users = await seedUser();
+
+      const res = await request(app).get('/api/users/me');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: users[0].id,
+          email: 'test@example.com',
+          clerkUserId: 'test_user_id',
+          role: UserRole.ADMIN,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        }),
+      );
+    });
+
+    it('should return 401 if the authenticated Clerk user has no matching DB record', async () => {
+      // No seed — DB is empty, attachDatabaseUser middleware returns 401
+      const res = await request(app).get('/api/users/me');
+
+      expect(res.status).toBe(401);
+      expect(res.body).toHaveProperty('errors');
+    });
+
+    it('should return 500 if an unexpected error occurs', async () => {
+      await seedUser();
+      jest
+        .spyOn(UserService.prototype, 'getUserById')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).get('/api/users/me');
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+  });
+
   describe('GET /api/users/:id', () => {
     it('should return 404 if user not found', async () => {
       await seedUser();

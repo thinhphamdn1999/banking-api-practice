@@ -8,6 +8,9 @@ export interface GetUsersParams extends PaginationParams {
 }
 
 export const usersService = {
+  getMe: () =>
+    apiClient.get<User>('/users/me').then((res) => res.data),
+
   getAll: (params?: GetUsersParams) =>
     apiClient.get<PaginatedResponse<User>>('/users', { params }).then((res) => res.data),
 
