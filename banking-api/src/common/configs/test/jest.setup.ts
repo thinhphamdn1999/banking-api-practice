@@ -18,6 +18,7 @@ jest.mock('@clerk/express', () => ({
         updatedAt: Math.floor(Date.now() / 1000),
       }),
       lockUser: jest.fn().mockResolvedValue(undefined),
+      unlockUser: jest.fn().mockResolvedValue(undefined),
     },
   },
 }));

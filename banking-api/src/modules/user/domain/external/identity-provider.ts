@@ -14,4 +14,5 @@ export interface UserInfo {
 export interface IdentityProvider {
   getUser(id: string): Promise<UserInfo>;
   lockUser(id: string): Promise<void>;
+  unlockUser(id: string): Promise<void>;
 }

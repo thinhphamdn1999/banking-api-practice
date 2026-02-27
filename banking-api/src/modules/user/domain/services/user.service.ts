@@ -53,4 +53,21 @@ export class UserService {
     );
     return { data: deactivatedUser };
   }
+
+  async activateUser(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+    }
+
+    // Unlock on Clerk side
+    await this.identityProvider.unlockUser(user.clerkUserId);
+
+    // Update status in DB
+    const activatedUser = await this.userRepository.update(
+      { status: UserStatus.ACTIVE, updatedAt: new Date() },
+      userId,
+    );
+    return { data: activatedUser };
+  }
 }
