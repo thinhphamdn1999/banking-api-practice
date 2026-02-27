@@ -1,24 +1,20 @@
 import { DataSource } from 'typeorm';
 
-import env from './env';
+import { isProduction } from './environment';
 
-const isProd = env.nodeEnv === 'production';
+import { findFiles } from '../utils/file-loader';
 
+/**
+ * The main data source instance used by the application. It is initialized with
+ * the configuration for the database connection and the paths to the entities,
+ * migrations, and subscribers.
+ */
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'banking-api.sqlite',
   logging: true,
-  synchronize: true,
-  entities: [
-    isProd
-      ? 'dist/components/**/domain/entities/*.entity.js'
-      : 'src/components/**/domain/entities/*.entity.ts',
-  ],
-
-  migrations: [
-    isProd ? 'dist/common/database/migrations/*.js' : 'src/common/database/migrations/*.ts',
-  ],
-  subscribers: [
-    isProd ? 'dist/common/database/subscribers/*.js' : 'src/common/database/subscribers/*.ts',
-  ],
+  synchronize: !isProduction,
+  entities: findFiles('entity'),
+  migrations: findFiles('migration'),
+  subscribers: findFiles('subscriber'),
 });

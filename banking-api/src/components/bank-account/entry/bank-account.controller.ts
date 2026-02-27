@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
 
-import { ERROR_CODES } from '@/common/constants/errors';
-import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
+import { ERROR_CODES } from '@/common/constants/error';
+import {
+  DEFAULT_PAGINATION_LIMIT_ITEM,
+  DEFAULT_PAGINATION_PAGE,
+} from '@/common/constants/pagination';
 import HttpStatusCode from '@/common/constants/http-status-code';
 
 import { FilterOptions } from '@/components/bank-account/types/bank-account';
@@ -33,7 +36,7 @@ export class BankAccountController {
       const result = await this.bankAccountService.findBankAccounts(
         {
           page: page ? Number(req.query.page) : DEFAULT_PAGINATION_PAGE,
-          limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT,
+          limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT_ITEM,
         },
         filter,
       );

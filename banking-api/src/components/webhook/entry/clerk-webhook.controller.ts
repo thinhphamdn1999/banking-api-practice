@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { verifyWebhook } from '@clerk/express/webhooks';
 
 import HttpStatusCode from '@/common/constants/http-status-code';
-import { ERROR_CODES } from '@/common/constants/errors';
+import { ERROR_CODES } from '@/common/constants/error';
 
 import { ClerkWebhook } from '@/components/user/webhooks/clerk-webhook';
 

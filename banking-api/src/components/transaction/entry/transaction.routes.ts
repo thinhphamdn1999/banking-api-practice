@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { getDataSource } from '@/common/configs/db';
+import { getDataSource } from '@/common/configs/database';
 
-import { requireRole } from '@/common/middleware/require-role';
+import { requireRole } from '@/common/middleware/role-guard.middleware';
 
 import { UserRole } from '@/components/user/types/user';
 

@@ -1,6 +1,6 @@
 import HttpStatusCode from '@/common/constants/http-status-code';
 import type { ApiError, ApiErrorInput, InvalidErrorInput } from '@/common/types/error';
-import { ERROR_CODES } from '../constants/errors';
+import { ERROR_CODES } from '../constants/error';
 
 /**
  * Map an HTTP status to a standardized error response object
@@ -43,6 +43,13 @@ export const createErrorResponse = ({ statusCode, message, errors }: ApiErrorInp
   return errorResponse;
 };
 
+/**
+ * Generate a list of standardized error objects for invalid request properties
+ * @param param0 - An object containing the prefix for the field names and an array of properties with their respective error descriptions
+ * @param param0.prefix - The prefix to use for the field names in the error objects (e.g., "body", "query", "params")
+ * @param param0.properties - An array of objects representing the invalid properties, each with a property name and a description of the error
+ * @returns - An array of error objects formatted according to the ApiError structure, with standardized error codes and messages for invalid requests
+ */
 export const getInvalidErrorList = ({ prefix, properties }: InvalidErrorInput) => {
   return properties.map(({ property, description }) => {
     return {

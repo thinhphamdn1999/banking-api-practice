@@ -11,6 +11,6 @@ export const getDataSource = (): DataSource => dataSource;
 /**
  * Used only by tests (or bootstrapping)
  */
-export const setDataSource = (ds: DataSource): void => {
-  dataSource = ds;
+export const setDataSource = (newDataSource: DataSource): void => {
+  dataSource = newDataSource;
 };

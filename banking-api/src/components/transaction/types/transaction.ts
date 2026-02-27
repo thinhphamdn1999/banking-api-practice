@@ -1,5 +1,5 @@
-import { Order } from '@/common/constants/filters';
-import { Amount } from '@/common/types/currency';
+import { SortOrder } from '@/common/constants/filter-parameter';
+import { Amount } from '@/common/types/money';
 
 export enum TransactionType {
   DEPOSIT = 'deposit',
@@ -18,7 +18,7 @@ export interface FilterOptions {
   toDate?: Date;
   type?: TransactionType;
   status?: TransactionStatus;
-  orderBy?: Order;
+  orderBy?: SortOrder;
   sortBy?: string;
   bankAccountIds?: string[];
 }

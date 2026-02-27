@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import 'dotenv/config';
 
 import swaggerUi from 'swagger-ui-express';
-import config from '@/common/configs/env';
+import environmentConfig from '@/common/configs/environment';
 
 import { AppDataSource } from '@/common/configs/data-source';
 import { loadOpenApiSpec } from '@/common/configs/swagger';
@@ -17,8 +17,8 @@ async function bootstrap() {
     const spec = await loadOpenApiSpec();
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec));
 
-    app.listen(config.port, () => {
-      console.log(`Server is running on http://localhost:${config.port}`);
+    app.listen(environmentConfig.port, () => {
+      console.log(`Server is running on http://localhost:${environmentConfig.port}`);
     });
   } catch (error) {
     console.error('Database connection failed:', error);
