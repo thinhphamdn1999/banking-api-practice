@@ -1,8 +1,11 @@
 import type { Request, Response } from 'express';
 
 import HttpStatusCode from '@/common/constants/http-status-code';
-import { ERROR_CODES } from '@/common/constants/errors';
-import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
+import { ERROR_CODES } from '@/common/constants/error';
+import {
+  DEFAULT_PAGINATION_LIMIT_ITEM,
+  DEFAULT_PAGINATION_PAGE,
+} from '@/common/constants/pagination';
 
 import { UserService } from '@/components/user/domain/services/user.service';
 
@@ -22,7 +25,7 @@ export class UserController {
       const result = await this.userService.findUsers(
         {
           page: page ? Number(req.query.page) : DEFAULT_PAGINATION_PAGE,
-          limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT,
+          limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT_ITEM,
         },
         req.query,
       );

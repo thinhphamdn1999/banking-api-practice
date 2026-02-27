@@ -1,7 +1,10 @@
 import { DataSource } from 'typeorm';
 
-import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
-import { ERROR_CODES } from '@/common/constants/errors';
+import {
+  DEFAULT_PAGINATION_LIMIT_ITEM,
+  DEFAULT_PAGINATION_PAGE,
+} from '@/common/constants/pagination';
+import { ERROR_CODES } from '@/common/constants/error';
 
 import { BaseError } from '@/common/types/error';
 import { PaginationOptions } from '@/common/types/pagination';
@@ -26,7 +29,7 @@ export class TransactionService {
   async findTransactions(
     pagination: PaginationOptions = {
       page: DEFAULT_PAGINATION_PAGE,
-      limit: DEFAULT_PAGINATION_LIMIT,
+      limit: DEFAULT_PAGINATION_LIMIT_ITEM,
     },
     filter?: FilterOptions,
     userId?: string,

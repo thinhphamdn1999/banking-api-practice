@@ -7,14 +7,14 @@ import {
   MoreThanOrEqual,
 } from 'typeorm';
 
-import { getDataSource } from '@/common/configs/db';
+import { getDataSource } from '@/common/configs/database';
 
-import { Order } from '@/common/constants/filters';
+import { SortOrder } from '@/common/constants/filter-parameter';
 
 import { PaginationOptions } from '@/common/types/pagination';
 import { FilterOptions, UpdateTransactionInput } from '@/components/transaction/types/transaction';
 
-import { BaseRepository } from '@/common/repository/base-repository';
+import { BaseRepository } from '@/common/repository/base.repository';
 
 import { Transaction } from '@/components/transaction/domain/entities/transaction.entity';
 
@@ -96,14 +96,14 @@ export class TransactionRepository extends BaseRepository<Transaction> {
       }
     }
 
-    return await this.paginate(pagination, {
+    return await this.getPaginated(pagination, {
       where,
       relations: {
         fromAccount: true,
         toAccount: true,
       },
       order: {
-        [filter?.sortBy ?? 'createdAt']: filter?.orderBy ?? Order.DESC,
+        [filter?.sortBy ?? 'createdAt']: filter?.orderBy ?? SortOrder.DESC,
       },
     });
   }

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { requireRole } from '@/common/middleware/require-role';
+import { requireRole } from '@/common/middleware/role-guard.middleware';
 
 import { UserRole } from '@/components/user/types/user';
 

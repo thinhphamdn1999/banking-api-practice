@@ -3,7 +3,7 @@ import request from 'supertest';
 import { verifyWebhook } from '@clerk/express/webhooks';
 import type { Express } from 'express';
 
-import { TestHelper } from '@/common/configs/test/dbInstance';
+import { TestHelper } from '@/common/configs/test/database-instance';
 
 import { User } from '@/components/user/domain/entities/user.entity';
 

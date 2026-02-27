@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import request from 'supertest';
 import type { Express } from 'express';
 
-import { TestHelper } from '@/common/configs/test/dbInstance';
+import { TestHelper } from '@/common/configs/test/database-instance';
 
 import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
 import { User } from '@/components/user/domain/entities/user.entity';

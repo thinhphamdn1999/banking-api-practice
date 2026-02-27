@@ -1,15 +1,15 @@
 import { FindOptionsWhere } from 'typeorm';
 
-import { getDataSource } from '@/common/configs/db';
+import { getDataSource } from '@/common/configs/database';
 
-import { Order } from '@/common/constants/filters';
+import { SortOrder } from '@/common/constants/filter-parameter';
 
 import { FilterOptions } from '@/components/user/types/user';
 import { PaginationOptions } from '@/common/types/pagination';
 
 import { User } from '@/components/user/domain/entities/user.entity';
 
-import { BaseRepository } from '@/common/repository/base-repository';
+import { BaseRepository } from '@/common/repository/base.repository';
 
 export class UserRepository extends BaseRepository<User> {
   constructor() {
@@ -23,9 +23,9 @@ export class UserRepository extends BaseRepository<User> {
       where.status = filter.status;
     }
 
-    return await this.paginate(pagination, {
+    return await this.getPaginated(pagination, {
       where,
-      order: { createdAt: Order.DESC },
+      order: { createdAt: SortOrder.DESC },
     });
   }
 

@@ -5,8 +5,11 @@ import {
   UpdateBankAccountInput,
 } from '@/components/bank-account/types/bank-account';
 
-import { ERROR_CODES } from '@/common/constants/errors';
-import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
+import { ERROR_CODES } from '@/common/constants/error';
+import {
+  DEFAULT_PAGINATION_LIMIT_ITEM,
+  DEFAULT_PAGINATION_PAGE,
+} from '@/common/constants/pagination';
 
 import { BankAccountRepository } from '@/components/bank-account/domain/repository/bank-account.repository';
 import { UserRepository } from '@/components/user/domain/repository/user.repository';
@@ -29,7 +32,7 @@ export class BankAccountService {
   async findBankAccounts(
     pagination: PaginationOptions = {
       page: DEFAULT_PAGINATION_PAGE,
-      limit: DEFAULT_PAGINATION_LIMIT,
+      limit: DEFAULT_PAGINATION_LIMIT_ITEM,
     },
     filter?: FilterOptions,
   ) {

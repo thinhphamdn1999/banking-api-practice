@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 
-import { ERROR_CODES } from '@/common/constants/errors';
-import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '@/common/constants/pagination';
+import { ERROR_CODES } from '@/common/constants/error';
+import {
+  DEFAULT_PAGINATION_LIMIT_ITEM,
+  DEFAULT_PAGINATION_PAGE,
+} from '@/common/constants/pagination';
 import HttpStatusCode from '@/common/constants/http-status-code';
-import { Order } from '@/common/constants/filters';
+import { SortOrder } from '@/common/constants/filter-parameter';
 
 import { BaseError } from '@/common/types/error';
 import {
@@ -47,13 +50,13 @@ export class TransactionController {
         toDate: toDate ? new Date(toDate as string) : undefined,
         bankAccountIds: normalizedBankAccountIds as string[],
         sortBy: sortBy as string,
-        orderBy: orderBy as Order,
+        orderBy: orderBy as SortOrder,
       };
 
       const result = await this.transactionService.findTransactions(
         {
           page: page ? Number(page) : DEFAULT_PAGINATION_PAGE,
-          limit: limit ? Number(limit) : DEFAULT_PAGINATION_LIMIT,
+          limit: limit ? Number(limit) : DEFAULT_PAGINATION_LIMIT_ITEM,
         },
         filters,
         userId,

@@ -1,13 +1,13 @@
 import { FindOptionsWhere, EntityManager } from 'typeorm';
 
-import { getDataSource } from '@/common/configs/db';
+import { getDataSource } from '@/common/configs/database';
 
-import { Order } from '@/common/constants/filters';
+import { SortOrder } from '@/common/constants/filter-parameter';
 
 import { PaginationOptions } from '@/common/types/pagination';
 import { FilterOptions } from '@/components/bank-account/types/bank-account';
 
-import { BaseRepository } from '@/common/repository/base-repository';
+import { BaseRepository } from '@/common/repository/base.repository';
 
 import { BankAccount } from '@/components/bank-account/domain/entities/bank-account.entity';
 
@@ -23,9 +23,9 @@ export class BankAccountRepository extends BaseRepository<BankAccount> {
       where.user = { id: filter.userId };
     }
 
-    return await this.paginate(pagination, {
+    return await this.getPaginated(pagination, {
       where,
-      order: { createdAt: Order.DESC },
+      order: { createdAt: SortOrder.DESC },
     });
   }
 

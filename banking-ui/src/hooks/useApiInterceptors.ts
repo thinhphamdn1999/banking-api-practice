@@ -14,7 +14,7 @@ import { apiClient } from '@/services/api';
  * and SnackbarProvider. ProtectedRoute is the right place.
  */
 export const useApiInterceptors = () => {
-  const { getToken } = useAuth();
+  const { getToken, signOut } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -32,7 +32,10 @@ export const useApiInterceptors = () => {
         const status = error.response?.status;
 
         if (status === 401) {
-          window.location.href = ROUTES.SIGN_IN;
+          // Sign out of Clerk first, then redirect. A bare window.location redirect
+          // would loop forever because Clerk still holds a valid session and
+          // immediately bounces the user back into the app.
+          signOut({ redirectUrl: ROUTES.SIGN_IN });
         }
 
         if (status === 429) {
@@ -49,5 +52,5 @@ export const useApiInterceptors = () => {
       apiClient.interceptors.request.eject(requestId);
       apiClient.interceptors.response.eject(responseId);
     };
-  }, [getToken, enqueueSnackbar]);
+  }, [getToken, signOut, enqueueSnackbar]);
 };
