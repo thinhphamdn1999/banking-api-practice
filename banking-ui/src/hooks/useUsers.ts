@@ -46,3 +46,22 @@ export const useDeactivateUser = () => {
     },
   });
 };
+
+export const useActivateUser = () => {
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return useMutation({
+    mutationFn: (id: string) => usersService.activate(id),
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.user(id) });
+      enqueueSnackbar('User activated successfully.', { variant: 'success' });
+    },
+    onError: (error) => {
+      enqueueSnackbar(getApiErrorMessage(error, 'Failed to activate user.'), {
+        variant: 'error',
+      });
+    },
+  });
+};

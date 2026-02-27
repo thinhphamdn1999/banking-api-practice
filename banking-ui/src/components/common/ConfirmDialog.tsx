@@ -17,7 +17,7 @@ interface ConfirmDialogProps {
   /** Label for the confirm button. Defaults to "Confirm". */
   confirmLabel?: string;
   /** Color of the confirm button. Defaults to "error" for destructive actions. */
-  confirmColor?: 'error' | 'warning' | 'primary';
+  confirmColor?: 'error' | 'warning' | 'primary' | 'success';
   /** Shows a spinner on the confirm button and disables both buttons while true. */
   isLoading?: boolean;
   onConfirm: () => void;

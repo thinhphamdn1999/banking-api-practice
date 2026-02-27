@@ -16,4 +16,7 @@ export const usersService = {
 
   deactivate: (id: string) =>
     apiClient.post<SingleResponse<User>>(`/users/${id}/de-active`).then((res) => res.data),
+
+  activate: (id: string) =>
+    apiClient.post<SingleResponse<User>>(`/users/${id}/activate`).then((res) => res.data),
 };
