@@ -8,10 +8,10 @@ import corsOptions from '@/common/configs/cors';
 import { authLimiter } from '@/common/middleware/rate-limit.middleware';
 import { requireAuth } from '@/common/middleware/required-auth.middleware';
 
-import userRouter from '@/components/user/entry/user.routes';
-import webhookRouter from '@/components/webhook/entry/clerk-webhook.routes';
-import bankAccountRouter from '@/components/bank-account/entry/bank-account.routes';
-import transactionRouter from '@/components/transaction/entry/transaction.routes';
+import userRouter from '@/modules/user/entry/user.routes';
+import webhookRouter from '@/modules/webhook/entry/clerk-webhook.routes';
+import bankAccountRouter from '@/modules/bank-account/entry/bank-account.routes';
+import transactionRouter from '@/modules/transaction/entry/transaction.routes';
 import { attachDatabaseUser } from '@/common/middleware/user-context.middleware';
 
 const app = express();

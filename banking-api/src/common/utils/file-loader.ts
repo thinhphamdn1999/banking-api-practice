@@ -1,7 +1,7 @@
 import { globSync } from 'node:fs';
 import path from 'node:path';
 
-import { isProduction } from '../configs/environment';
+import { isProduction } from '@/common/configs/environment';
 
 const extension = isProduction ? 'js' : 'ts';
 
