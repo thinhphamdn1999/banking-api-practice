@@ -25,10 +25,12 @@ src/
 ├── common/             # Shared utilities, middleware, types, configs
 │   ├── configs/        # DB, CORS, environment, Swagger
 │   ├── constants/      # Error codes, HTTP status, pagination defaults
+│   ├── databases/
+│   │   └── migrations/ # TypeORM migration files
 │   ├── middleware/     # Auth, role guard, rate-limit, attach-db-user
 │   ├── repository/     # Base repository
 │   └── types/          # Shared TypeScript types
-├── components/
+├── modules/
 │   ├── bank-account/
 │   │   ├── domain/     # Entity, repository, service
 │   │   ├── entry/      # Controller, routes, tests
@@ -72,24 +74,53 @@ CLERK_SECRET_KEY=
 CLERK_WEBHOOK_SIGNING_SECRET=
 ```
 
-3. Start the server
+4. Set up the database
+```bash
+pnpm migration:run
+```
+
+5. Start the server
 ```bash
 # Development (auto-reload)
-pnpm run dev
+pnpm dev
 
 # Production
-pnpm run build
+pnpm build
 pnpm start
 ```
 
-4. Start ngrok (IMPORTANT: This step will help sync data between Clerk and local DB)
+6. Start ngrok (IMPORTANT: syncs user data between Clerk and local DB via webhooks)
 ```bash
 ngrok http {PORT}
 ```
 
+## Database Migrations
+
+Schema is managed via TypeORM migrations — `synchronize` is disabled in all environments.
+
+| Command | Description |
+|---|---|
+| `pnpm migration:run` | Apply all pending migrations |
+| `pnpm migration:revert` | Revert the last applied migration |
+| `pnpm migration:show` | List all migrations and their status |
+| `pnpm migration:create <path>` | Create a new empty migration file |
+| `pnpm migration:generate --name=<Name>` | Auto-generate migration from entity diff |
+
+**Adding a migration after entity changes:**
+```bash
+pnpm migration:generate --name=AddSomeFeature
+pnpm migration:run
+```
+
+**Fresh database setup (e.g. after pulling changes):**
+```bash
+rm banking-api.sqlite   # delete existing DB if any
+pnpm migration:run
+```
+
 ## API Reference
 
-All protected routes require a Clerk JWT in the `Authorization` header:
+All protected routes require a Clerk session token in the `Authorization` header:
 ```
 Authorization: Bearer <token>
 ```
@@ -98,8 +129,10 @@ Authorization: Bearer <token>
 
 | Method | Path | Role | Description |
 |---|---|---|---|
-| `GET` | `/api/users` | Admin | List all users (paginated) |
+| `GET` | `/api/users` | Admin | List all users (paginated, filterable by status) |
+| `GET` | `/api/users/me` | Any | Get the currently authenticated user |
 | `GET` | `/api/users/:id` | Any | Get user by ID |
+| `POST` | `/api/users/:id/activate` | Admin | Activate a deactivated user |
 | `POST` | `/api/users/:id/de-active` | Admin | Deactivate a user |
 
 ### Bank Accounts
@@ -130,12 +163,18 @@ Authorization: Bearer <token>
 
 | Permission | User | Admin |
 |---|---|---|
+| Get current user (`/me`) | ✅ | ✅ |
 | View own bank accounts / transactions | ✅ | — |
 | View all bank accounts / transactions | — | ✅ |
 | Filter bank accounts by `?userId=` | — | ✅ |
 | Create / update bank accounts | ✅ | ❌ 403 |
 | Create / update transactions | ✅ | ❌ 403 |
-| List / deactivate users | — | ✅ |
+| List users | — | ✅ |
+| Activate / deactivate users | — | ✅ |
+
+## Authentication
+
+Auth is handled by [Clerk](https://clerk.com). The API never parses JWT tokens directly — `clerkMiddleware()` verifies the session token automatically, and `getAuth(req)` exposes the trusted `userId`. The app then resolves the internal database user via the `attachDatabaseUser` middleware.
 
 ## API Documentation
 
@@ -149,10 +188,10 @@ http://localhost:{PORT}/api-docs
 
 ```bash
 # Run all tests
-pnpm run test
+pnpm test
 
 # Watch mode
-pnpm run test:watch
+pnpm test:watch
 ```
 
 ## Documents
