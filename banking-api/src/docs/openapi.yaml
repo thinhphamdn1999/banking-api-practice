@@ -17,8 +17,12 @@ tags:
 paths:
   /users:
     $ref: './paths/users.yaml#/users'
+  /users/me:
+    $ref: './paths/users.yaml#/currentUser'
   /users/{id}:
     $ref: './paths/users.yaml#/userById'
+  /users/{id}/activate:
+    $ref: './paths/users.yaml#/activateUser'
   /users/{id}/de-active:
     $ref: './paths/users.yaml#/deActiveUser'
 
