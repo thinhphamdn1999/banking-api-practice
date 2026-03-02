@@ -64,6 +64,32 @@ userById:
             schema:
               $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
 
+currentUser:
+  get:
+    tags:
+      - Users
+    summary: Get current authenticated user
+    description: Returns the database record of the currently authenticated user
+    responses:
+      '200':
+        description: Current user found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/user.schema.yaml#/User'
+      '404':
+        description: Authenticated user has no matching DB record
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
 deActiveUser:
   post:
     tags:
@@ -86,6 +112,45 @@ deActiveUser:
               $ref: '../components/schemas/user.schema.yaml#/User'
       '404':
         description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+
+activateUser:
+  post:
+    tags:
+      - Users
+    summary: Activate user
+    description: Unlocks user in identity provider and sets status back to active
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: User activated
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/user.schema.yaml#/User'
+      '404':
+        description: User not found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/common.schema.yaml#/ApiErrorResponse'
+      '500':
+        description: Internal server error
         content:
           application/json:
             schema:
