@@ -114,7 +114,7 @@ describe('Transaction Routes', () => {
           description: 'deposit to bank account',
           fromAccount: null,
           name: 'Deposit to bank_account_test_1',
-          status: 'pending',
+          status: 'success',
           type: 'deposit',
           id: expect.any(String),
           createdAt: expect.any(String),
@@ -156,14 +156,14 @@ describe('Transaction Routes', () => {
         });
 
       const res = await request(app).get(
-        '/api/transactions?type=deposit&status=pending&page=1&limit=30',
+        '/api/transactions?type=deposit&status=success&page=1&limit=30',
       );
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(1);
       expect(res.body.data[0].type).toBe('deposit');
       expect(
-        res.body.data.every((transaction: Transaction) => transaction.status === 'pending'),
+        res.body.data.every((transaction: Transaction) => transaction.status === 'success'),
       ).toBe(true);
     });
 
@@ -411,7 +411,7 @@ describe('Transaction Routes', () => {
           description: 'deposit to bank account',
           fromAccount: null,
           name: 'Deposit to bank_account_test_1',
-          status: 'pending',
+          status: 'success',
           type: 'deposit',
           id: expect.any(String),
           createdAt: expect.any(String),
@@ -449,7 +449,7 @@ describe('Transaction Routes', () => {
             currency: 'USD',
           },
           name: 'Deposit to bank_account_test_1',
-          status: 'pending',
+          status: 'success',
           type: 'deposit',
           toAccount: {
             accountNumber: '5883926628',
@@ -654,7 +654,7 @@ describe('Transaction Routes', () => {
             currency: 'USD',
           },
           name: 'Deposit to bank_account_test_1',
-          status: 'pending',
+          status: 'success',
           type: 'deposit',
           toAccount: {
             accountNumber: '5883926628',

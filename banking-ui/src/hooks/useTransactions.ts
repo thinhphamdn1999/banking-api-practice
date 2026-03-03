@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
@@ -14,6 +14,7 @@ export const useTransactions = (params?: GetTransactionsParams) =>
   useQuery({
     queryKey: [...QUERY_KEYS.TRANSACTIONS, params],
     queryFn: () => transactionsService.getAll(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useTransaction = (id: string) =>

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
@@ -14,6 +14,7 @@ export const useUsers = (params?: GetUsersParams) =>
   useQuery({
     queryKey: [...QUERY_KEYS.USERS, params],
     queryFn: () => usersService.getAll(params),
+    placeholderData: keepPreviousData,
   });
 
 // Named useUserById to avoid collision with Clerk's useUser hook

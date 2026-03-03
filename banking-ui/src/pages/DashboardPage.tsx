@@ -40,7 +40,7 @@ export const DashboardPage = () => {
   const accounts = accountsResponse?.data ?? [];
   const recentTransactions = txResponse?.data ?? [];
   const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
-  const totalTransactions = txResponse?.metadata?.total ?? 0;
+  const totalTransactions = txResponse?.metadata?.totalCount ?? 0;
 
   // BarChart data derived from accounts
   const chartLabels = accounts.map((acc) => acc.name);
