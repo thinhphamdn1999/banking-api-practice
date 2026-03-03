@@ -11,6 +11,7 @@ import { PaginationOptions } from '@/common/types/pagination';
 import {
   CreateTransactionInput,
   FilterOptions,
+  TransactionStatus,
   TransactionType,
   UpdateTransactionInput,
 } from '@/modules/transaction/types/transaction';
@@ -137,6 +138,7 @@ export class TransactionService {
           fromAccount: fromAccount ? fromAccount : undefined,
           toAccount: toAccount ? toAccount : undefined,
           description: input.description,
+          status: TransactionStatus.SUCCESS,
         },
         manager,
       );

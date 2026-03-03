@@ -1,8 +1,9 @@
 export interface PaginationMeta {
-  page: number;
   limit: number;
-  total: number;
-  totalPages: number;
+  offset: number;
+  currentPage: number;
+  pageCount: number;
+  totalCount: number;
 }
 
 export interface PaginatedResponse<T> {

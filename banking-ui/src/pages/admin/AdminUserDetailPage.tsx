@@ -76,7 +76,7 @@ export const AdminUserDetailPage = () => {
     enabled: !accountsLoading && bankAccountIds.length > 0,
   });
   const transactions = txResponse?.data ?? [];
-  const txTotal = txResponse?.metadata?.total ?? 0;
+  const txTotal = txResponse?.metadata?.totalCount ?? 0;
 
   // -------------------------------------------------------------------------
   // Deactivate

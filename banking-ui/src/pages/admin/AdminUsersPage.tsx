@@ -106,7 +106,7 @@ export const AdminUsersPage = () => {
 
   const { data: usersResponse, isLoading } = useUsers(queryParams);
   const rows = usersResponse?.data ?? [];
-  const rowCount = usersResponse?.metadata?.total ?? 0;
+  const rowCount = usersResponse?.metadata?.totalCount ?? 0;
 
   // -------------------------------------------------------------------------
   // Columns

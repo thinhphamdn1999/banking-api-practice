@@ -75,7 +75,7 @@ export const TransactionsPage = () => {
 
   const { data: txResponse, isLoading } = useTransactions(queryParams);
   const rows = txResponse?.data ?? [];
-  const rowCount = txResponse?.metadata?.total ?? 0;
+  const rowCount = txResponse?.metadata?.totalCount ?? 0;
 
   // -------------------------------------------------------------------------
   // Filter helpers
