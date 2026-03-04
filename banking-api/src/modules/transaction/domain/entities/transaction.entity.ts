@@ -34,7 +34,7 @@ export class Transaction {
   @Column({ type: 'varchar', length: 20, default: 'USD' })
   currency!: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', unique: true })
   idempotencyKey!: string;
 
   @CreateDateColumn()

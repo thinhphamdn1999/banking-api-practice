@@ -12,9 +12,10 @@ import {
   CreateTransactionInput,
   FilterOptions,
   TransactionStatus,
-  TransactionType,
   UpdateTransactionInput,
 } from '@/modules/transaction/types/transaction';
+
+import { resolveTransactionName } from '@/modules/transaction/utils/transaction';
 
 import { TransactionRepository } from '@/modules/transaction/domain/repository/transaction.repository';
 import { BankAccountRepository } from '@/modules/bank-account/domain/repository/bank-account.repository';
@@ -61,6 +62,15 @@ export class TransactionService {
 
   async createTransaction(input: CreateTransactionInput) {
     return this.dataSource.transaction(async (manager) => {
+      // Validate amount
+      const isInvalidAmount =
+        !input.amount || !Number.isFinite(input.amount.amount) || input.amount.amount <= 0;
+
+      if (isInvalidAmount) {
+        throw new BaseError({ message: ERROR_CODES.INVALID_AMOUNT });
+      }
+
+      // Check for existing transaction with the same idempotency key to ensure idempotency
       const existing = await this.transactionRepository.findByIdempotencyKey(
         input.idempotencyKey,
         manager,
@@ -68,13 +78,6 @@ export class TransactionService {
 
       if (existing) {
         return { data: existing };
-      }
-
-      const isInvalidAmount =
-        !input.amount || !Number.isFinite(input.amount.amount) || input.amount.amount <= 0;
-
-      if (isInvalidAmount) {
-        throw new BaseError({ message: ERROR_CODES.INVALID_AMOUNT });
       }
 
       let fromAccount: BankAccount | null = null;
@@ -112,21 +115,7 @@ export class TransactionService {
         await this.bankAccountRepository.save(toAccount, manager);
       }
 
-      let name = '';
-
-      switch (input.type) {
-        case TransactionType.DEPOSIT:
-          name = `Deposit to ${toAccount?.name}`;
-          break;
-        case TransactionType.WITHDRAW:
-          name = `Withdraw from ${fromAccount?.name}`;
-          break;
-        case TransactionType.TRANSFER:
-          name = `Transfer to ${toAccount?.name}`;
-          break;
-        default:
-          name = '';
-      }
+      const name = resolveTransactionName(input.type, fromAccount?.name, toAccount?.name);
 
       const transaction = await this.transactionRepository.create(
         {

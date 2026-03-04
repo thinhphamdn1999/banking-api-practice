@@ -137,12 +137,26 @@ export class TransactionController {
               description: 'destinationAccountId is required for deposit money',
             });
           }
+
+          if (sourceAccountId) {
+            errorList.push({
+              property: 'sourceAccountId',
+              description: 'sourceAccountId should not be provided for deposit money',
+            });
+          }
           break;
         case TransactionType.WITHDRAW:
           if (!sourceAccountId) {
             errorList.push({
               property: 'sourceAccountId',
               description: 'sourceAccountId is required for withdraw money',
+            });
+          }
+
+          if (destinationAccountId) {
+            errorList.push({
+              property: 'destinationAccountId',
+              description: 'destinationAccountId should not be provided for withdraw money',
             });
           }
           break;
