@@ -9,6 +9,8 @@ import { UserRole } from '@/modules/user/types/user';
 import { TransactionRepository } from '@/modules/transaction/domain/repository/transaction.repository';
 import { BankAccountRepository } from '@/modules/bank-account/domain/repository/bank-account.repository';
 import { TransactionService } from '@/modules/transaction/domain/services/transaction.service';
+import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
+import { TransactionApplicationService } from '@/modules/transaction/application/transaction.application';
 
 import { TransactionController } from '@/modules/transaction/entry/transaction.controller';
 
@@ -16,12 +18,17 @@ const transactionRouter = Router();
 
 const transactionRepository = new TransactionRepository();
 const bankAccountRepository = new BankAccountRepository();
-const transactionService = new TransactionService(
-  transactionRepository,
-  bankAccountRepository,
+
+const transactionService = new TransactionService(transactionRepository);
+const bankAccountService = new BankAccountService(bankAccountRepository);
+
+const transactionApplicationService = new TransactionApplicationService(
+  transactionService,
+  bankAccountService,
   getDataSource(),
 );
-const controller = new TransactionController(transactionService);
+
+const controller = new TransactionController(transactionApplicationService);
 
 transactionRouter.get('/', controller.getTransactions);
 transactionRouter.get('/:id', controller.getTransactionById);

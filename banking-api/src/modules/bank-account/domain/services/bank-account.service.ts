@@ -1,9 +1,7 @@
+import { DeepPartial, EntityManager } from 'typeorm';
+
 import { PaginationOptions } from '@/common/types/pagination';
-import {
-  CreateBankAccountInput,
-  FilterOptions,
-  UpdateBankAccountInput,
-} from '@/modules/bank-account/types/bank-account';
+import { FilterOptions, UpdateBankAccountInput } from '@/modules/bank-account/types/bank-account';
 
 import { ERROR_CODES } from '@/common/constants/error';
 import {
@@ -11,23 +9,13 @@ import {
   DEFAULT_PAGINATION_PAGE,
 } from '@/common/constants/pagination';
 
+import { BaseError } from '@/common/types/error';
+
 import { BankAccountRepository } from '@/modules/bank-account/domain/repository/bank-account.repository';
-import { UserRepository } from '@/modules/user/domain/repository/user.repository';
+import { BankAccount } from '@/modules/bank-account/domain/entities/bank-account.entity';
 
 export class BankAccountService {
-  constructor(
-    private readonly bankAccountRepository: BankAccountRepository,
-    private readonly userRepository: UserRepository,
-  ) {}
-
-  private async generateUniqueAccountNumber(): Promise<string> {
-    while (true) {
-      const number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-
-      const exists = await this.bankAccountRepository.findByAccountNumber(number);
-      if (!exists) return number;
-    }
-  }
+  constructor(private readonly bankAccountRepository: BankAccountRepository) {}
 
   async findBankAccounts(
     pagination: PaginationOptions = {
@@ -36,9 +24,7 @@ export class BankAccountService {
     },
     filter?: FilterOptions,
   ) {
-    const bankAccounts = await this.bankAccountRepository.findBankAccounts(pagination, filter);
-
-    return { data: bankAccounts };
+    return this.bankAccountRepository.findBankAccounts(pagination, filter);
   }
 
   async getBankAccountById(bankAccountId: string, userId?: string) {
@@ -47,47 +33,51 @@ export class BankAccountService {
       : await this.bankAccountRepository.findById(bankAccountId);
 
     if (!bankAccount) {
-      return { error: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND };
+      throw new BaseError({ message: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND });
     }
 
-    return { data: bankAccount };
+    return bankAccount;
   }
 
-  async createBankAccount({ name, userId }: CreateBankAccountInput) {
-    const user = await this.userRepository.findById(userId);
-
-    if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
-    }
-
-    // TODO: Apply retry to handle race condition (2 separated users create account at the same time)
-    const newAccountNumber = await this.generateUniqueAccountNumber();
-
-    const newBankAccount = await this.bankAccountRepository.create({
-      user,
-      name,
-      accountNumber: newAccountNumber,
-    });
-
-    return { data: newBankAccount };
+  async findByAccountNumber(accountNumber: string) {
+    return this.bankAccountRepository.findByAccountNumber(accountNumber);
   }
 
-  async updateBankAccount({ name, userId, bankAccountId }: UpdateBankAccountInput) {
-    const bankAccount = await this.bankAccountRepository.findBankAccountByUserIdAndBankId(
-      userId,
-      bankAccountId,
-    );
+  async createBankAccount(data: DeepPartial<BankAccount>) {
+    return await this.bankAccountRepository.create(data);
+  }
 
-    if (!bankAccount) {
-      return { error: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND };
+  async debitAccount(accountId: string, amount: number, manager: EntityManager) {
+    const account = await this.bankAccountRepository.findByIdWithLock(accountId, manager);
+
+    if (!account) {
+      throw new BaseError({ message: ERROR_CODES.SOURCE_ACCOUNT_NOT_FOUND });
     }
 
-    const updatedBankAccount = await this.bankAccountRepository.update(
-      {
-        name,
-      },
-      bankAccountId,
-    );
-    return { data: updatedBankAccount };
+    if (account.balance < amount) {
+      throw new BaseError({ message: ERROR_CODES.INSUFFICIENT_BALANCE });
+    }
+
+    account.balance -= amount;
+    await this.bankAccountRepository.save(account, manager);
+
+    return account;
+  }
+
+  async creditAccount(accountId: string, amount: number, manager: EntityManager) {
+    const account = await this.bankAccountRepository.findByIdWithLock(accountId, manager);
+
+    if (!account) {
+      throw new BaseError({ message: ERROR_CODES.DESTINATION_ACCOUNT_NOT_FOUND });
+    }
+
+    account.balance += amount;
+    await this.bankAccountRepository.save(account, manager);
+
+    return account;
+  }
+
+  async updateBankAccount({ name, bankAccountId }: UpdateBankAccountInput) {
+    return await this.bankAccountRepository.update({ name }, bankAccountId);
   }
 }

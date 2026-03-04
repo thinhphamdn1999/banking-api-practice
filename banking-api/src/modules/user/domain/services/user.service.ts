@@ -7,6 +7,7 @@ import {
   DEFAULT_PAGINATION_PAGE,
 } from '@/common/constants/pagination';
 
+import { BaseError } from '@/common/types/error';
 import { UserRepository } from '@/modules/user/domain/repository/user.repository';
 import { IdentityProvider } from '@/modules/user/domain/external/identity-provider';
 
@@ -23,51 +24,46 @@ export class UserService {
     },
     filter?: FilterOptions,
   ) {
-    const users = await this.userRepository.findUsers(pagination, filter);
-
-    return { data: users };
+    return this.userRepository.findUsers(pagination, filter);
   }
 
   async getUserById(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
+      throw new BaseError({ message: ERROR_CODES.USER_NOT_FOUND });
     }
-
-    return { data: user };
+    return user;
   }
 
   async deActiveUser(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
+      throw new BaseError({ message: ERROR_CODES.USER_NOT_FOUND });
     }
 
     // Lock on Clerk side
     await this.identityProvider.lockUser(user.clerkUserId);
 
     // Update status in DB
-    const deactivatedUser = await this.userRepository.update(
+    return (await this.userRepository.update(
       { status: UserStatus.DE_ACTIVE, updatedAt: new Date() },
       userId,
-    );
-    return { data: deactivatedUser };
+    ))!;
   }
 
   async activateUser(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.USER_NOT_FOUND };
+      throw new BaseError({ message: ERROR_CODES.USER_NOT_FOUND });
     }
 
     // Unlock on Clerk side
     await this.identityProvider.unlockUser(user.clerkUserId);
 
     // Update status in DB
-    const activatedUser = await this.userRepository.update(
+    return (await this.userRepository.update(
       { status: UserStatus.ACTIVE, updatedAt: new Date() },
       userId,
-    );
-    return { data: activatedUser };
+    ))!;
   }
 }
