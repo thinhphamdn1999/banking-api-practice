@@ -5,7 +5,7 @@ import { verifyWebhook } from '@clerk/express/webhooks';
 import HttpStatusCode from '@/common/constants/http-status-code';
 import { ERROR_CODES } from '@/common/constants/error';
 
-import { createErrorResponse } from '@/common/utils/error-response';
+import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
 import { ClerkWebhook } from '@/modules/user/webhooks/clerk-webhook';
 
@@ -55,12 +55,7 @@ export class ClerkWebhookController {
           );
       }
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          message: 'Error verifying Clerk webhook',
-        }),
-      );
+      return sendInternalError(res, 'Failed to verify Clerk webhook');
     }
   };
 }

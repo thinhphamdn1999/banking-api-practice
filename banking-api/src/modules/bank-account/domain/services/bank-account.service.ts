@@ -47,7 +47,7 @@ export class BankAccountService {
       : await this.bankAccountRepository.findById(bankAccountId);
 
     if (!bankAccount) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND };
     }
 
     return { data: bankAccount };
@@ -57,7 +57,7 @@ export class BankAccountService {
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.USER_NOT_FOUND };
     }
 
     // TODO: Apply retry to handle race condition (2 separated users create account at the same time)
@@ -79,7 +79,7 @@ export class BankAccountService {
     );
 
     if (!bankAccount) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND };
     }
 
     const updatedBankAccount = await this.bankAccountRepository.update(
