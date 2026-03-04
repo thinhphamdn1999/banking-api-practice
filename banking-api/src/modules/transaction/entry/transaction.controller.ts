@@ -14,10 +14,9 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@/modules/transaction/types/transaction';
-import { Transaction } from '@/modules/transaction/domain/entities/transaction.entity';
 import { UserRole } from '@/modules/user/types/user';
 
-import { TransactionService } from '@/modules/transaction/domain/services/transaction.service';
+import { TransactionApplicationService } from '@/modules/transaction/application/transaction.application';
 
 import { transactionMapper } from '@/modules/transaction/entry/transaction.mapper';
 
@@ -28,7 +27,7 @@ import {
 } from '@/common/utils/error-response';
 
 export class TransactionController {
-  constructor(private readonly transactionService: TransactionService) {
+  constructor(private readonly transactionService: TransactionApplicationService) {
     this.getTransactions = this.getTransactions.bind(this);
     this.getTransactionById = this.getTransactionById.bind(this);
     this.createTransaction = this.createTransaction.bind(this);
@@ -68,8 +67,8 @@ export class TransactionController {
       );
 
       return res.status(HttpStatusCode.OK).json({
-        data: result.data.data.map((transaction) => transactionMapper(transaction)),
-        metadata: result.data.metadata,
+        data: result.data.map((transaction) => transactionMapper(transaction)),
+        metadata: result.metadata,
       });
     } catch {
       return sendInternalError(res, 'Failed to fetch transaction list');
@@ -80,13 +79,15 @@ export class TransactionController {
     try {
       const { id: userId, role } = req.user ?? {};
 
-      const result = await this.transactionService.getTransactionById(
+      const transaction = await this.transactionService.getTransactionById(
         req.params.id as string,
         userId as string,
         role === UserRole.ADMIN,
       );
 
-      if (result.error === ERROR_CODES.TRANSACTION_NOT_FOUND) {
+      return res.status(HttpStatusCode.OK).json(transactionMapper(transaction));
+    } catch (error: unknown) {
+      if (error instanceof BaseError && error.message === ERROR_CODES.TRANSACTION_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
@@ -99,9 +100,6 @@ export class TransactionController {
           }),
         );
       }
-
-      return res.status(HttpStatusCode.OK).json(transactionMapper(result.data as Transaction));
-    } catch {
       return sendInternalError(res, 'Failed to fetch a transaction');
     }
   }
@@ -181,7 +179,7 @@ export class TransactionController {
         );
       }
 
-      const result = await this.transactionService.createTransaction({
+      const transaction = await this.transactionService.createTransaction({
         amount,
         idempotencyKey,
         type,
@@ -190,7 +188,7 @@ export class TransactionController {
         sourceAccountId,
       });
 
-      return res.status(HttpStatusCode.CREATED).json(transactionMapper(result.data as Transaction));
+      return res.status(HttpStatusCode.CREATED).json(transactionMapper(transaction));
     } catch (error: unknown) {
       if (error instanceof BaseError) {
         if (error.message === ERROR_CODES.INVALID_AMOUNT) {
@@ -264,16 +262,16 @@ export class TransactionController {
       const { description } = req.body;
       const { id: userId, role } = req.user ?? {};
 
-      const result = await this.transactionService.updateTransaction(
+      const transaction = await this.transactionService.updateTransaction(
         transactionId as string,
-        {
-          description,
-        },
+        { description },
         userId as string,
         role === UserRole.ADMIN,
       );
 
-      if (result.error === ERROR_CODES.TRANSACTION_NOT_FOUND) {
+      return res.status(HttpStatusCode.OK).json(transactionMapper(transaction));
+    } catch (error: unknown) {
+      if (error instanceof BaseError && error.message === ERROR_CODES.TRANSACTION_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
@@ -286,9 +284,6 @@ export class TransactionController {
           }),
         );
       }
-
-      return res.status(HttpStatusCode.OK).json(transactionMapper(result.data as Transaction));
-    } catch {
       return sendInternalError(res, 'Failed to update a transaction');
     }
   }

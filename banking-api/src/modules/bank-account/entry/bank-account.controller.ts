@@ -7,15 +7,16 @@ import {
 } from '@/common/constants/pagination';
 import HttpStatusCode from '@/common/constants/http-status-code';
 
+import { BaseError } from '@/common/types/error';
 import { FilterOptions } from '@/modules/bank-account/types/bank-account';
 import { UserRole } from '@/modules/user/types/user';
 
 import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
-import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
+import { BankAccountApplicationService } from '@/modules/bank-account/application/bank-account.application';
 
 export class BankAccountController {
-  constructor(private readonly bankAccountService: BankAccountService) {
+  constructor(private readonly bankAccountApplicationService: BankAccountApplicationService) {
     this.getBankAccounts = this.getBankAccounts.bind(this);
     this.getBankAccountById = this.getBankAccountById.bind(this);
     this.createBankAccount = this.createBankAccount.bind(this);
@@ -28,19 +29,17 @@ export class BankAccountController {
       const { id: userId, role } = req.user ?? {};
 
       const filter: FilterOptions = {
-        // Non-admin: always scoped to their own accounts.
-        // Admin: optionally filter by a specific userId passed in the query string.
         userId: role !== UserRole.ADMIN ? userId : (queryUserId as string | undefined),
       };
 
-      const result = await this.bankAccountService.findBankAccounts(
+      const result = await this.bankAccountApplicationService.findBankAccounts(
         {
           page: page ? Number(req.query.page) : DEFAULT_PAGINATION_PAGE,
           limit: limit ? Number(req.query.limit) : DEFAULT_PAGINATION_LIMIT_ITEM,
         },
         filter,
       );
-      return res.status(HttpStatusCode.OK).json(result.data);
+      return res.status(HttpStatusCode.OK).json(result);
     } catch {
       return sendInternalError(res, 'Failed to fetch bank account list');
     }
@@ -49,12 +48,14 @@ export class BankAccountController {
   async getBankAccountById(req: Request, res: Response) {
     try {
       const { id: userId, role } = req.user ?? {};
-      const result = await this.bankAccountService.getBankAccountById(
+      const bankAccount = await this.bankAccountApplicationService.getBankAccountById(
         req.params.id as string,
         role !== UserRole.ADMIN ? userId : undefined,
       );
 
-      if (result.error === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
+      return res.status(HttpStatusCode.OK).json(bankAccount);
+    } catch (error: unknown) {
+      if (error instanceof BaseError && error.message === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
@@ -67,9 +68,6 @@ export class BankAccountController {
           }),
         );
       }
-
-      return res.status(HttpStatusCode.OK).json(result.data);
-    } catch {
       return sendInternalError(res, 'Failed to fetch a bank account');
     }
   }
@@ -94,27 +92,21 @@ export class BankAccountController {
         );
       }
 
-      const result = await this.bankAccountService.createBankAccount({
+      const bankAccount = await this.bankAccountApplicationService.createBankAccount({
         name,
         userId: userId as string,
       });
 
-      if (result.error === ERROR_CODES.USER_NOT_FOUND) {
+      return res.status(HttpStatusCode.CREATED).json(bankAccount);
+    } catch (error: unknown) {
+      if (error instanceof BaseError && error.message === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
-            errors: [
-              {
-                errCode: ERROR_CODES.USER_NOT_FOUND,
-                message: 'Can not find any user',
-              },
-            ],
+            errors: [{ errCode: ERROR_CODES.USER_NOT_FOUND, message: 'Can not find any user' }],
           }),
         );
       }
-
-      return res.status(HttpStatusCode.CREATED).json(result.data);
-    } catch {
       return sendInternalError(res, 'Failed to create a bank account');
     }
   }
@@ -140,28 +132,37 @@ export class BankAccountController {
         );
       }
 
-      const result = await this.bankAccountService.updateBankAccount({
+      const bankAccount = await this.bankAccountApplicationService.updateBankAccount({
         name,
         userId: userId as string,
         bankAccountId: bankAccountId as string,
       });
 
-      if (result.error === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
-        return res.status(HttpStatusCode.NOT_FOUND).json(
-          createErrorResponse({
-            statusCode: HttpStatusCode.NOT_FOUND,
-            errors: [
-              {
-                errCode: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND,
-                message: 'Can not find any bank account',
-              },
-            ],
-          }),
-        );
+      return res.status(HttpStatusCode.OK).json(bankAccount);
+    } catch (error: unknown) {
+      if (error instanceof BaseError) {
+        if (error.message === ERROR_CODES.USER_NOT_FOUND) {
+          return res.status(HttpStatusCode.NOT_FOUND).json(
+            createErrorResponse({
+              statusCode: HttpStatusCode.NOT_FOUND,
+              errors: [{ errCode: ERROR_CODES.USER_NOT_FOUND, message: 'Can not find any user' }],
+            }),
+          );
+        }
+        if (error.message === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
+          return res.status(HttpStatusCode.NOT_FOUND).json(
+            createErrorResponse({
+              statusCode: HttpStatusCode.NOT_FOUND,
+              errors: [
+                {
+                  errCode: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND,
+                  message: 'Can not find any bank account',
+                },
+              ],
+            }),
+          );
+        }
       }
-
-      return res.status(HttpStatusCode.OK).json(result.data);
-    } catch {
       return sendInternalError(res, 'Failed to update a bank account');
     }
   }
