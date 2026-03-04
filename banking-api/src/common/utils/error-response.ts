@@ -1,3 +1,5 @@
+import { Response } from 'express';
+
 import HttpStatusCode from '@/common/constants/http-status-code';
 import type { ApiError, ApiErrorInput, InvalidErrorInput } from '@/common/types/error';
 import { ERROR_CODES } from '../constants/error';
@@ -65,4 +67,13 @@ export const getInvalidErrorList = ({ prefix, properties }: InvalidErrorInput) =
       message: description,
     };
   });
+};
+
+export const sendInternalError = (res: Response, message: string) => {
+  return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+    createErrorResponse({
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      errors: [{ errCode: ERROR_CODES.GENERAL_EXCEPTION, message }],
+    }),
+  );
 };

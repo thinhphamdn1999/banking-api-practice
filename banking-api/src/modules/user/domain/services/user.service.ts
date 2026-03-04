@@ -31,7 +31,7 @@ export class UserService {
   async getUserById(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.USER_NOT_FOUND };
     }
 
     return { data: user };
@@ -40,7 +40,7 @@ export class UserService {
   async deActiveUser(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.USER_NOT_FOUND };
     }
 
     // Lock on Clerk side
@@ -57,7 +57,7 @@ export class UserService {
   async activateUser(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.USER_NOT_FOUND };
     }
 
     // Unlock on Clerk side

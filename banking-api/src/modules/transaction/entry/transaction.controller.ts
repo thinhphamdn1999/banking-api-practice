@@ -21,7 +21,11 @@ import { TransactionService } from '@/modules/transaction/domain/services/transa
 
 import { transactionMapper } from '@/modules/transaction/entry/transaction.mapper';
 
-import { createErrorResponse, getInvalidErrorList } from '@/common/utils/error-response';
+import {
+  createErrorResponse,
+  getInvalidErrorList,
+  sendInternalError,
+} from '@/common/utils/error-response';
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {
@@ -68,17 +72,7 @@ export class TransactionController {
         metadata: result.data.metadata,
       });
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch transaction list',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch transaction list');
     }
   }
 
@@ -92,13 +86,13 @@ export class TransactionController {
         role === UserRole.ADMIN,
       );
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.TRANSACTION_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
               {
-                errCode: ERROR_CODES.ITEM_NOT_FOUND,
+                errCode: ERROR_CODES.TRANSACTION_NOT_FOUND,
                 message: 'Can not find any transaction',
               },
             ],
@@ -108,17 +102,7 @@ export class TransactionController {
 
       return res.status(HttpStatusCode.OK).json(transactionMapper(result.data as Transaction));
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch a transaction',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch a transaction');
     }
   }
 
@@ -270,17 +254,7 @@ export class TransactionController {
         }
       }
 
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to create a transaction',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to create a transaction');
     }
   }
 
@@ -299,13 +273,13 @@ export class TransactionController {
         role === UserRole.ADMIN,
       );
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.TRANSACTION_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
               {
-                errCode: ERROR_CODES.ITEM_NOT_FOUND,
+                errCode: ERROR_CODES.TRANSACTION_NOT_FOUND,
                 message: 'Can not find any transaction',
               },
             ],
@@ -315,17 +289,7 @@ export class TransactionController {
 
       return res.status(HttpStatusCode.OK).json(transactionMapper(result.data as Transaction));
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to update a transaction',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to update a transaction');
     }
   }
 }

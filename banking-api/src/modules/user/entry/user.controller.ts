@@ -7,7 +7,7 @@ import {
   DEFAULT_PAGINATION_PAGE,
 } from '@/common/constants/pagination';
 
-import { createErrorResponse } from '@/common/utils/error-response';
+import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
 import { UserService } from '@/modules/user/domain/services/user.service';
 
@@ -24,27 +24,17 @@ export class UserController {
     try {
       const result = await this.userService.getUserById(req.user!.id as string);
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
-            errors: [{ errCode: ERROR_CODES.ITEM_NOT_FOUND, message: 'Can not find user' }],
+            errors: [{ errCode: ERROR_CODES.USER_NOT_FOUND, message: 'Can not find user' }],
           }),
         );
       }
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch current user',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch current user');
     }
   }
 
@@ -61,17 +51,7 @@ export class UserController {
       );
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch user list',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch user list');
     }
   }
 
@@ -79,13 +59,13 @@ export class UserController {
     try {
       const result = await this.userService.getUserById(req.params.id as string);
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
               {
-                errCode: ERROR_CODES.ITEM_NOT_FOUND,
+                errCode: ERROR_CODES.USER_NOT_FOUND,
                 message: 'Can not find user',
               },
             ],
@@ -94,17 +74,7 @@ export class UserController {
       }
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch user list',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch a user');
     }
   }
 
@@ -112,28 +82,18 @@ export class UserController {
     try {
       const result = await this.userService.deActiveUser(req.params.id as string);
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
-            errors: [{ errCode: ERROR_CODES.ITEM_NOT_FOUND, message: 'Can not find user' }],
+            errors: [{ errCode: ERROR_CODES.USER_NOT_FOUND, message: 'Can not find user' }],
           }),
         );
       }
 
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to de active user',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to de active user');
     }
   }
 
@@ -141,28 +101,18 @@ export class UserController {
     try {
       const result = await this.userService.activateUser(req.params.id as string);
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
-            errors: [{ errCode: ERROR_CODES.ITEM_NOT_FOUND, message: 'Can not find user' }],
+            errors: [{ errCode: ERROR_CODES.USER_NOT_FOUND, message: 'Can not find user' }],
           }),
         );
       }
 
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to activate user',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to activate user');
     }
   }
 }

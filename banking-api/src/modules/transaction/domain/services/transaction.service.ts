@@ -54,7 +54,7 @@ export class TransactionService {
       isAdmin,
     );
     if (!transaction) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.TRANSACTION_NOT_FOUND };
     }
 
     return { data: transaction };
@@ -154,7 +154,7 @@ export class TransactionService {
       isAdmin,
     );
     if (!transaction) {
-      return { error: ERROR_CODES.ITEM_NOT_FOUND };
+      return { error: ERROR_CODES.TRANSACTION_NOT_FOUND };
     }
 
     const updatedTransaction = await this.transactionRepository.updateAndGetTransactionWithRelation(

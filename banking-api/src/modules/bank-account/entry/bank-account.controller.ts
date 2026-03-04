@@ -10,7 +10,7 @@ import HttpStatusCode from '@/common/constants/http-status-code';
 import { FilterOptions } from '@/modules/bank-account/types/bank-account';
 import { UserRole } from '@/modules/user/types/user';
 
-import { createErrorResponse } from '@/common/utils/error-response';
+import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
 import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
 
@@ -42,17 +42,7 @@ export class BankAccountController {
       );
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch bank account list',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch bank account list');
     }
   }
 
@@ -64,13 +54,13 @@ export class BankAccountController {
         role !== UserRole.ADMIN ? userId : undefined,
       );
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
               {
-                errCode: ERROR_CODES.ITEM_NOT_FOUND,
+                errCode: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND,
                 message: 'Can not find any bank account',
               },
             ],
@@ -80,17 +70,7 @@ export class BankAccountController {
 
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to fetch a bank account',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to fetch a bank account');
     }
   }
 
@@ -119,13 +99,13 @@ export class BankAccountController {
         userId: userId as string,
       });
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
               {
-                errCode: ERROR_CODES.ITEM_NOT_FOUND,
+                errCode: ERROR_CODES.USER_NOT_FOUND,
                 message: 'Can not find any user',
               },
             ],
@@ -135,17 +115,7 @@ export class BankAccountController {
 
       return res.status(HttpStatusCode.CREATED).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to create a bank account',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to create a bank account');
     }
   }
 
@@ -176,13 +146,13 @@ export class BankAccountController {
         bankAccountId: bankAccountId as string,
       });
 
-      if (result.error === ERROR_CODES.ITEM_NOT_FOUND) {
+      if (result.error === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
           createErrorResponse({
             statusCode: HttpStatusCode.NOT_FOUND,
             errors: [
               {
-                errCode: ERROR_CODES.ITEM_NOT_FOUND,
+                errCode: ERROR_CODES.BANK_ACCOUNT_NOT_FOUND,
                 message: 'Can not find any bank account',
               },
             ],
@@ -192,17 +162,7 @@ export class BankAccountController {
 
       return res.status(HttpStatusCode.OK).json(result.data);
     } catch {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
-        createErrorResponse({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-          errors: [
-            {
-              errCode: ERROR_CODES.GENERAL_EXCEPTION,
-              message: 'Failed to update a bank account',
-            },
-          ],
-        }),
-      );
+      return sendInternalError(res, 'Failed to update a bank account');
     }
   }
 }
