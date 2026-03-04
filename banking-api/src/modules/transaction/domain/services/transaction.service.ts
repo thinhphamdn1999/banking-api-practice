@@ -82,6 +82,8 @@ export class TransactionService {
 
       let fromAccount: BankAccount | null = null;
       let toAccount: BankAccount | null = null;
+      let fromAccountBalance: number | null = null;
+      let toAccountBalance: number | null = null;
 
       if (input.sourceAccountId) {
         fromAccount = await this.bankAccountRepository.findByIdWithLock(
@@ -99,6 +101,7 @@ export class TransactionService {
 
         fromAccount.balance -= input.amount.amount;
         await this.bankAccountRepository.save(fromAccount, manager);
+        fromAccountBalance = fromAccount.balance;
       }
 
       if (input.destinationAccountId) {
@@ -113,6 +116,7 @@ export class TransactionService {
 
         toAccount.balance += input.amount.amount;
         await this.bankAccountRepository.save(toAccount, manager);
+        toAccountBalance = toAccount.balance;
       }
 
       const name = resolveTransactionName(input.type, fromAccount?.name, toAccount?.name);
@@ -126,6 +130,8 @@ export class TransactionService {
           idempotencyKey: input.idempotencyKey,
           fromAccount: fromAccount ? fromAccount : undefined,
           toAccount: toAccount ? toAccount : undefined,
+          fromAccountBalance: fromAccountBalance !== null ? fromAccountBalance.toString() : null,
+          toAccountBalance: toAccountBalance !== null ? toAccountBalance.toString() : null,
           description: input.description,
           status: TransactionStatus.SUCCESS,
         },

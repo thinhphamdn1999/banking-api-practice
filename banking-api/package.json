@@ -13,7 +13,7 @@
     "prepare": "cd .. && husky ./banking-api/.husky",
     "test": "jest",
     "test:watch": "jest --watch",
-    "migration:create": "tsx ./node_modules/typeorm/cli.js migration:create",
+    "migration:create": "tsx ./node_modules/typeorm/cli.js migration:create src/common/databases/migrations/$npm_config_name",
     "migration:generate": "tsx ./node_modules/typeorm/cli.js migration:generate src/common/databases/migrations/$npm_config_name -d src/common/configs/data-source.ts",
     "migration:show": "tsx ./node_modules/typeorm/cli.js migration:show -d src/common/configs/data-source.ts",
     "migration:revert": "tsx ./node_modules/typeorm/cli.js migration:revert -d src/common/configs/data-source.ts",

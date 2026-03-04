@@ -10,6 +10,10 @@ export const transactionMapper = (transaction: Transaction) => {
     amount: formattedMoney(transaction.amount, transaction.currency),
     createdAt: transaction.createdAt,
     updatedAt: transaction.updatedAt,
+    fromAccountBalance: transaction.fromAccountBalance
+      ? Number(transaction.fromAccountBalance)
+      : null,
+    toAccountBalance: transaction.toAccountBalance ? Number(transaction.toAccountBalance) : null,
     fromAccount: transaction.fromAccount,
     toAccount: transaction.toAccount,
   };

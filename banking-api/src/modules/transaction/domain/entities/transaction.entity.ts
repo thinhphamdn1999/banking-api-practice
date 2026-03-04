@@ -37,6 +37,12 @@ export class Transaction {
   @Column({ type: 'text', unique: true })
   idempotencyKey!: string;
 
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  fromAccountBalance!: string | null;
+
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  toAccountBalance!: string | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 
