@@ -16,6 +16,8 @@ export interface Transaction {
   status: TransactionStatus;
   amount: TransactionAmount;
   idempotencyKey: string;
+  fromAccountBalance: string | null;
+  toAccountBalance: string | null;
   createdAt: string;
   updatedAt: string;
   fromAccount: BankAccountSummary | null;
