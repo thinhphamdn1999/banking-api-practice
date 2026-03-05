@@ -105,6 +105,8 @@ export class TransactionController {
   }
 
   async createTransaction(req: Request, res: Response) {
+    const idempotencyKey = req.headers['idempotency-key'] as string;
+
     const parsed = CreateTransactionSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(HttpStatusCode.BAD_REQUEST).json(
@@ -120,7 +122,7 @@ export class TransactionController {
     }
 
     try {
-      const { type, amount, idempotencyKey, description } = parsed.data;
+      const { type, amount, description } = parsed.data;
       const sourceAccountId =
         'sourceAccountId' in parsed.data ? parsed.data.sourceAccountId : undefined;
       const destinationAccountId =

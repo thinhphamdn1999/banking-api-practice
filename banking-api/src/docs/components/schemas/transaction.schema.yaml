@@ -64,7 +64,6 @@ CreateTransactionRequest:
   required:
     - type
     - amount
-    - idempotencyKey
   properties:
     type:
       type: string
@@ -90,8 +89,6 @@ CreateTransactionRequest:
     description:
       type: string
       nullable: true
-    idempotencyKey:
-      type: string
 
 UpdateTransactionRequest:
   type: object

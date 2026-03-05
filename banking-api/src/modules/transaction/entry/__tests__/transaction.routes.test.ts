@@ -101,6 +101,7 @@ describe('Transaction Routes', () => {
       });
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: {
@@ -109,7 +110,6 @@ describe('Transaction Routes', () => {
           },
           destinationAccountId: bankAccount?.id,
           description: 'deposit to bank account',
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       const res = await request(app).get('/api/transactions');
@@ -151,20 +151,20 @@ describe('Transaction Routes', () => {
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'key-deposit')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: bankAccount?.id,
-          idempotencyKey: 'key-deposit',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'key-withdraw')
         .send({
           type: 'withdraw',
           amount: { amount: 50, currency: 'usd' },
           sourceAccountId: bankAccount?.id,
-          idempotencyKey: 'key-withdraw',
         });
 
       const res = await request(app).get(
@@ -190,30 +190,30 @@ describe('Transaction Routes', () => {
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: account1?.id,
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a70')
         .send({
           type: 'transfer',
           amount: { amount: 50, currency: 'usd' },
           sourceAccountId: account1?.id,
           destinationAccountId: account2?.id,
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a70',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a71')
         .send({
           type: 'withdraw',
           amount: { amount: 30, currency: 'usd' },
           sourceAccountId: account2?.id,
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a71',
         });
 
       const res = await request(app)
@@ -241,29 +241,29 @@ describe('Transaction Routes', () => {
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'date-1')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'date-1',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'date-2')
         .send({
           type: 'deposit',
           amount: { amount: 200, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'date-2',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'date-3')
         .send({
           type: 'deposit',
           amount: { amount: 300, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'date-3',
         });
 
       const transaction1 = await transactionRepo.findOneBy({ idempotencyKey: 'date-1' });
@@ -300,20 +300,20 @@ describe('Transaction Routes', () => {
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'from-1')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'from-1',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'from-2')
         .send({
           type: 'deposit',
           amount: { amount: 200, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'from-2',
         });
 
       const transaction1 = await transactionRepo.findOneBy({ idempotencyKey: 'from-1' });
@@ -343,20 +343,20 @@ describe('Transaction Routes', () => {
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'to-1')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'to-1',
         });
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'to-2')
         .send({
           type: 'deposit',
           amount: { amount: 200, currency: 'usd' },
           destinationAccountId: account?.id,
-          idempotencyKey: 'to-2',
         });
 
       const transaction1 = await transactionRepo.findOneBy({ idempotencyKey: 'to-1' });
@@ -406,6 +406,7 @@ describe('Transaction Routes', () => {
 
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: {
@@ -414,7 +415,6 @@ describe('Transaction Routes', () => {
           },
           destinationAccountId: bankAccount?.id,
           description: 'deposit to bank account',
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       const transaction = await transactionRepo.findOneBy({
@@ -454,11 +454,11 @@ describe('Transaction Routes', () => {
 
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', 'test-500-key')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: bankAccount?.id,
-          idempotencyKey: 'test-500-key',
         });
 
       expect(res.status).toBe(500);
@@ -471,6 +471,7 @@ describe('Transaction Routes', () => {
       });
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: {
@@ -479,7 +480,6 @@ describe('Transaction Routes', () => {
           },
           destinationAccountId: bankAccount?.id,
           description: 'deposit to bank account',
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(201);
@@ -512,17 +512,17 @@ describe('Transaction Routes', () => {
     it('should return 400 and type field error if type missing', async () => {
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'invalid',
           amount: { amount: 100, currency: 'usd' },
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
       expect(res.body.errors[0].field).toBe('transaction.type');
     });
 
-    it('should return 400 if idempotencyKey missing', async () => {
+    it('should return 400 if Idempotency-Key header is missing', async () => {
       const bankAccount = await bankAccountRepo.findOneBy({
         accountNumber: '5883926628',
       });
@@ -536,16 +536,16 @@ describe('Transaction Routes', () => {
         });
 
       expect(res.status).toBe(400);
-      expect(res.body.errors[0].field).toBe('transaction.idempotencyKey');
+      expect(res.body.errors[0].field).toBe('Idempotency-Key');
     });
 
     it('should return 400 if deposit without destinationAccountId', async () => {
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -555,10 +555,10 @@ describe('Transaction Routes', () => {
     it('should return 400 if withdraw without sourceAccountId', async () => {
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'withdraw',
           amount: { amount: 100, currency: 'usd' },
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -568,10 +568,10 @@ describe('Transaction Routes', () => {
     it('should return 400 if transfer without sourceAccountId or destinationAccountId', async () => {
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'transfer',
           amount: { amount: 100, currency: 'usd' },
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -586,11 +586,11 @@ describe('Transaction Routes', () => {
 
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: { amount: 0, currency: 'usd' },
           destinationAccountId: bankAccount?.id,
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -601,11 +601,11 @@ describe('Transaction Routes', () => {
     it('should return 400 if destination account not found', async () => {
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
           destinationAccountId: 'non-existing-id',
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -615,11 +615,11 @@ describe('Transaction Routes', () => {
     it('should return 400 if source account not found', async () => {
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'withdraw',
           amount: { amount: 100, currency: 'usd' },
           sourceAccountId: 'non-existing-id',
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -633,11 +633,11 @@ describe('Transaction Routes', () => {
 
       const res = await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'withdraw',
           amount: { amount: 999999, currency: 'usd' },
           sourceAccountId: bankAccount?.id,
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
 
       expect(res.status).toBe(400);
@@ -653,11 +653,16 @@ describe('Transaction Routes', () => {
         type: 'deposit',
         amount: { amount: 100, currency: 'usd' },
         destinationAccountId: bankAccount?.id,
-        idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
       };
 
-      const first = await request(app).post('/api/transactions').send(payload);
-      const second = await request(app).post('/api/transactions').send(payload);
+      const first = await request(app)
+        .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
+        .send(payload);
+      const second = await request(app)
+        .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
+        .send(payload);
 
       expect(first.body.id).toBe(second.body.id);
     });
@@ -681,6 +686,7 @@ describe('Transaction Routes', () => {
       });
       await request(app)
         .post('/api/transactions')
+        .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
           amount: {
@@ -689,7 +695,6 @@ describe('Transaction Routes', () => {
           },
           destinationAccountId: bankAccount?.id,
           description: 'deposit to bank account',
-          idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
         });
       const transaction = await transactionRepo.findOneBy({
         idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',

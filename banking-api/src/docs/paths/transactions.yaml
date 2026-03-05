@@ -68,6 +68,13 @@ transactions:
     summary: Create transaction
     security:
       - BearerAuth: []
+    parameters:
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+        description: Unique key to ensure idempotent request processing
     requestBody:
       required: true
       content:

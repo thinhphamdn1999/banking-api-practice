@@ -16,8 +16,12 @@ export const transactionsService = {
   getById: (id: string) =>
     apiClient.get<SingleResponse<Transaction>>(`/transactions/${id}`).then((res) => res.data),
 
-  create: (data: CreateTransactionPayload) =>
-    apiClient.post<SingleResponse<Transaction>>('/transactions', data).then((res) => res.data),
+  create: ({ idempotencyKey, ...data }: CreateTransactionPayload) =>
+    apiClient
+      .post<SingleResponse<Transaction>>('/transactions', data, {
+        headers: { 'Idempotency-Key': idempotencyKey },
+      })
+      .then((res) => res.data),
 
   updateDescription: (id: string, description: string) =>
     apiClient
