@@ -44,6 +44,9 @@ importers:
       typeorm:
         specifier: ^0.3.28
         version: 0.3.28(sqlite3@5.1.7)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@commitlint/cli':
         specifier: ^20.4.1
@@ -3279,6 +3282,9 @@ packages:
     resolution: {integrity: sha512-D7eujBWkLa3p2sIpJA0d1pr7es+a7m0vFAnZLlCEKq/Ij2k0MLi9Br2UPxoxdYystm5K1yeBGzub0FlYUEWj2Q==}
     engines: {node: '>=8.0.0'}
     hasBin: true
+
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -6851,3 +6857,5 @@ snapshots:
       validator: 13.15.26
     optionalDependencies:
       commander: 9.5.0
+
+  zod@4.3.6: {}

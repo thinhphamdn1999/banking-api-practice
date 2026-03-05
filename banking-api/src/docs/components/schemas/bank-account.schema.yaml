@@ -7,6 +7,9 @@ BankAccount:
       type: string
     accountNumber:
       type: string
+    balance:
+      type: number
+      example: 1000
     createdAt:
       type: string
       format: date-time

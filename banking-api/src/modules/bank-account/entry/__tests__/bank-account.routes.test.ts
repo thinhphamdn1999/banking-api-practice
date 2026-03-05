@@ -252,6 +252,20 @@ describe('Bank Account Routes', () => {
       expect(res.body).toHaveProperty('errors');
     });
 
+    it('should retry account number generation if number already exists', async () => {
+      const existingAccount = await seedBankAccounts();
+
+      jest
+        .spyOn(BankAccountService.prototype, 'findByAccountNumber')
+        .mockResolvedValueOnce(existingAccount)
+        .mockResolvedValueOnce(null);
+
+      const res = await request(app).post('/api/bank-accounts').send({ name: 'Test Account' });
+
+      expect(res.status).toBe(201);
+      expect(BankAccountService.prototype.findByAccountNumber).toHaveBeenCalledTimes(2);
+    });
+
     it('should return 500 if an unexpected error occurs', async () => {
       jest
         .spyOn(BankAccountService.prototype, 'createBankAccount')

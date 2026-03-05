@@ -15,6 +15,12 @@ import { createErrorResponse, sendInternalError } from '@/common/utils/error-res
 
 import { BankAccountApplicationService } from '@/modules/bank-account/application/bank-account.application';
 
+import {
+  CreateBankAccountSchema,
+  UpdateBankAccountSchema,
+  toBankAccountDTO,
+} from '@/modules/bank-account/entry/bank-account.dto';
+
 export class BankAccountController {
   constructor(private readonly bankAccountApplicationService: BankAccountApplicationService) {
     this.getBankAccounts = this.getBankAccounts.bind(this);
@@ -39,7 +45,10 @@ export class BankAccountController {
         },
         filter,
       );
-      return res.status(HttpStatusCode.OK).json(result);
+      return res.status(HttpStatusCode.OK).json({
+        data: result.data.map(toBankAccountDTO),
+        metadata: result.metadata,
+      });
     } catch {
       return sendInternalError(res, 'Failed to fetch bank account list');
     }
@@ -53,7 +62,7 @@ export class BankAccountController {
         role !== UserRole.ADMIN ? userId : undefined,
       );
 
-      return res.status(HttpStatusCode.OK).json(bankAccount);
+      return res.status(HttpStatusCode.OK).json(toBankAccountDTO(bankAccount));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.BANK_ACCOUNT_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -73,31 +82,28 @@ export class BankAccountController {
   }
 
   async createBankAccount(req: Request, res: Response) {
+    const parsed = CreateBankAccountSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json(
+        createErrorResponse({
+          statusCode: HttpStatusCode.BAD_REQUEST,
+          errors: parsed.error.issues.map((issue) => ({
+            errCode: ERROR_CODES.INVALID_REQUEST,
+            field: issue.path.join('.'),
+            message: issue.message,
+          })),
+        }),
+      );
+    }
+
     try {
       const { id: userId } = req.user ?? {};
-      const { name } = req.body;
-
-      if (!name) {
-        return res.status(HttpStatusCode.BAD_REQUEST).json(
-          createErrorResponse({
-            statusCode: HttpStatusCode.BAD_REQUEST,
-            errors: [
-              {
-                errCode: ERROR_CODES.INVALID_REQUEST,
-                field: 'bankAccount.name',
-                message: 'Bank account name is required',
-              },
-            ],
-          }),
-        );
-      }
-
       const bankAccount = await this.bankAccountApplicationService.createBankAccount({
-        name,
+        name: parsed.data.name,
         userId: userId as string,
       });
 
-      return res.status(HttpStatusCode.CREATED).json(bankAccount);
+      return res.status(HttpStatusCode.CREATED).json(toBankAccountDTO(bankAccount));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -112,33 +118,31 @@ export class BankAccountController {
   }
 
   async updateBankAccount(req: Request, res: Response) {
+    const parsed = UpdateBankAccountSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json(
+        createErrorResponse({
+          statusCode: HttpStatusCode.BAD_REQUEST,
+          errors: parsed.error.issues.map((issue) => ({
+            errCode: ERROR_CODES.INVALID_REQUEST,
+            field: issue.path.join('.'),
+            message: issue.message,
+          })),
+        }),
+      );
+    }
+
     try {
       const bankAccountId = req.params.id;
-      const { name } = req.body;
       const { id: userId } = req.user ?? {};
 
-      if (!name) {
-        return res.status(HttpStatusCode.BAD_REQUEST).json(
-          createErrorResponse({
-            statusCode: HttpStatusCode.BAD_REQUEST,
-            errors: [
-              {
-                errCode: ERROR_CODES.INVALID_REQUEST,
-                field: 'bankAccount.name',
-                message: 'Bank account name is required',
-              },
-            ],
-          }),
-        );
-      }
-
       const bankAccount = await this.bankAccountApplicationService.updateBankAccount({
-        name,
+        name: parsed.data.name,
         userId: userId as string,
         bankAccountId: bankAccountId as string,
       });
 
-      return res.status(HttpStatusCode.OK).json(bankAccount);
+      return res.status(HttpStatusCode.OK).json(toBankAccountDTO(bankAccount!));
     } catch (error: unknown) {
       if (error instanceof BaseError) {
         if (error.message === ERROR_CODES.USER_NOT_FOUND) {
