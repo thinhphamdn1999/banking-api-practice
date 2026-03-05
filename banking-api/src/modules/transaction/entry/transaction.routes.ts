@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { getDataSource } from '@/common/configs/database';
 
 import { requireRole } from '@/common/middleware/role-guard.middleware';
+import { requireIdempotencyKey } from '@/common/middleware/idempotency-key.middleware';
 
 import { UserRole } from '@/modules/user/types/user';
 
@@ -32,7 +33,12 @@ const controller = new TransactionController(transactionApplicationService);
 
 transactionRouter.get('/', controller.getTransactions);
 transactionRouter.get('/:id', controller.getTransactionById);
-transactionRouter.post('/', requireRole(UserRole.USER), controller.createTransaction);
+transactionRouter.post(
+  '/',
+  requireRole(UserRole.USER),
+  requireIdempotencyKey,
+  controller.createTransaction,
+);
 transactionRouter.put('/:id', requireRole(UserRole.USER), controller.updateTransaction);
 
 export default transactionRouter;

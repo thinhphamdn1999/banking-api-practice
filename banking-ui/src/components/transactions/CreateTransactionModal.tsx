@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -82,6 +82,8 @@ export const CreateTransactionModal = ({ open, onClose }: CreateTransactionModal
   const { data: accountsResponse } = useBankAccounts();
   const accounts = accountsResponse?.data ?? [];
 
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
+
   const createTransaction = useCreateTransaction();
 
   const {
@@ -106,11 +108,12 @@ export const CreateTransactionModal = ({ open, onClose }: CreateTransactionModal
     await createTransaction.mutateAsync({
       type: values.type as TransactionType,
       amount: { amount: values.amount, currency: 'USD' },
-      idempotencyKey: crypto.randomUUID(),
+      idempotencyKey: idempotencyKey,
       sourceAccountId: values.fromAccountId || undefined,
       destinationAccountId: values.toAccountId || undefined,
       description: values.description || undefined,
     });
+    setIdempotencyKey(crypto.randomUUID());
     onClose();
   };
 

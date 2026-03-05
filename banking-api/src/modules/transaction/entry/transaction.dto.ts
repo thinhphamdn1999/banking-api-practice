@@ -13,7 +13,6 @@ const baseTransactionFields = {
     amount: z.number().positive('Amount must be larger than 0'),
     currency: z.string().min(1, 'Currency is required'),
   }),
-  idempotencyKey: z.string().min(1, 'idempotencyKey is required'),
   description: z.string().optional(),
 };
 
