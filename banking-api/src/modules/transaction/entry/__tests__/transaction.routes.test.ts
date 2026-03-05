@@ -7,6 +7,7 @@ import { TestHelper } from '@/common/configs/test/database-instance';
 import { BankAccount } from '@/modules/bank-account/domain/entities/bank-account.entity';
 import { User } from '@/modules/user/domain/entities/user.entity';
 import { Transaction } from '@/modules/transaction/domain/entities/transaction.entity';
+import { TransactionService } from '@/modules/transaction/domain/services/transaction.service';
 
 describe('Transaction Routes', () => {
   let app: Express;
@@ -67,6 +68,17 @@ describe('Transaction Routes', () => {
   };
 
   describe('GET /api/transactions', () => {
+    it('should return 500 if an unexpected error occurs', async () => {
+      jest
+        .spyOn(TransactionService.prototype, 'findTransactions')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).get('/api/transactions');
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+
     it('should return [] when transaction', async () => {
       const res = await request(app).get('/api/transactions');
 
@@ -369,6 +381,17 @@ describe('Transaction Routes', () => {
   });
 
   describe('GET /api/transaction/:id', () => {
+    it('should return 500 if an unexpected error occurs', async () => {
+      jest
+        .spyOn(TransactionService.prototype, 'getTransactionById')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).get('/api/transactions/some-id');
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+
     it('should return 404 if transaction not found', async () => {
       const res = await request(app).get('/api/transactions/non-existing-id');
 
@@ -422,6 +445,26 @@ describe('Transaction Routes', () => {
   });
 
   describe('POST /api/transactions', () => {
+    it('should return 500 if an unexpected error occurs', async () => {
+      const bankAccount = await bankAccountRepo.findOneBy({ accountNumber: '5883926628' });
+
+      jest
+        .spyOn(TransactionService.prototype, 'createTransaction')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app)
+        .post('/api/transactions')
+        .send({
+          type: 'deposit',
+          amount: { amount: 100, currency: 'usd' },
+          destinationAccountId: bankAccount?.id,
+          idempotencyKey: 'test-500-key',
+        });
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+
     it('should create transaction successfully', async () => {
       const bankAccount = await bankAccountRepo.findOneBy({
         accountNumber: '5883926628',
@@ -532,8 +575,8 @@ describe('Transaction Routes', () => {
         });
 
       expect(res.status).toBe(400);
-      expect(res.body.errors[0].field).toBe('transaction.destinationAccountId');
-      expect(res.body.errors[1].field).toBe('transaction.sourceAccountId');
+      expect(res.body.errors[0].field).toBe('transaction.sourceAccountId');
+      expect(res.body.errors[1].field).toBe('transaction.destinationAccountId');
     });
 
     it('should return 400 if amount <= 0', async () => {
@@ -551,7 +594,8 @@ describe('Transaction Routes', () => {
         });
 
       expect(res.status).toBe(400);
-      expect(res.body.errors[0].errCode).toBe('invalidAmount');
+      expect(res.body.errors[0].errCode).toBe('invalidRequest');
+      expect(res.body.errors[0].field).toBe('transaction.amount.amount');
     });
 
     it('should return 400 if destination account not found', async () => {
@@ -620,6 +664,17 @@ describe('Transaction Routes', () => {
   });
 
   describe('PUT /api/transactions/:id', () => {
+    it('should return 500 if an unexpected error occurs', async () => {
+      jest
+        .spyOn(TransactionService.prototype, 'updateTransaction')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).put('/api/transactions/some-id').send({ description: 'test' });
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+
     it('should update transaction successfully', async () => {
       const bankAccount = await bankAccountRepo.findOneBy({
         accountNumber: '5883926628',

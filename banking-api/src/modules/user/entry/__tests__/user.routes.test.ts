@@ -4,6 +4,8 @@ import type { Express } from 'express';
 
 import { TestHelper } from '@/common/configs/test/database-instance';
 
+import { BaseError } from '@/common/types/error';
+import { ERROR_CODES } from '@/common/constants/error';
 import { UserRole, UserStatus } from '@/modules/user/types/user';
 
 import { User } from '@/modules/user/domain/entities/user.entity';
@@ -61,7 +63,6 @@ describe('User Routes', () => {
       expect(res.body.data[0]).toEqual(
         expect.objectContaining({
           email: 'test@example.com',
-          clerkUserId: 'test_user_id',
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
@@ -110,7 +111,6 @@ describe('User Routes', () => {
       expect(res.body.data[0]).toEqual(
         expect.objectContaining({
           email: 'test@example.com',
-          clerkUserId: 'test_user_id',
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
@@ -139,12 +139,23 @@ describe('User Routes', () => {
         expect.objectContaining({
           id: users[0].id,
           email: 'test@example.com',
-          clerkUserId: 'test_user_id',
           role: UserRole.ADMIN,
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
         }),
       );
+    });
+
+    it('should return 404 if user not found', async () => {
+      await seedUser();
+      jest
+        .spyOn(UserService.prototype, 'getUserById')
+        .mockRejectedValueOnce(new BaseError({ message: ERROR_CODES.USER_NOT_FOUND }));
+
+      const res = await request(app).get('/api/users/me');
+
+      expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty('errors');
     });
 
     it('should return 401 if the authenticated Clerk user has no matching DB record', async () => {
@@ -169,6 +180,18 @@ describe('User Routes', () => {
   });
 
   describe('GET /api/users/:id', () => {
+    it('should return 500 if an unexpected error occurs', async () => {
+      await seedUser();
+      jest
+        .spyOn(UserService.prototype, 'getUserById')
+        .mockRejectedValueOnce(new Error('Unexpected error'));
+
+      const res = await request(app).get('/api/users/some-id');
+
+      expect(res.status).toBe(500);
+      expect(res.body).toHaveProperty('errors');
+    });
+
     it('should return 404 if user not found', async () => {
       await seedUser();
       const res = await request(app).get('/api/users/non-existing-id');
@@ -188,7 +211,6 @@ describe('User Routes', () => {
         expect.objectContaining({
           id: user[1].id,
           email: 'test1@example.com',
-          clerkUserId: 'test_user_id_2',
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
         }),

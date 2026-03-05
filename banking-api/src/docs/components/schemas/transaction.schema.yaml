@@ -32,10 +32,22 @@ Transaction:
     updatedAt:
       type: string
       format: date-time
+    fromAccountBalance:
+      type: number
+      nullable: true
+      example: 900
+    toAccountBalance:
+      type: number
+      nullable: true
+      example: 1100
     fromAccount:
-      $ref: '../schemas/bank-account.schema.yaml#/BankAccount'
+      nullable: true
+      allOf:
+        - $ref: '../schemas/bank-account.schema.yaml#/BankAccount'
     toAccount:
-      $ref: '../schemas/bank-account.schema.yaml#/BankAccount'
+      nullable: true
+      allOf:
+        - $ref: '../schemas/bank-account.schema.yaml#/BankAccount'
 
 TransactionListResponse:
   type: object

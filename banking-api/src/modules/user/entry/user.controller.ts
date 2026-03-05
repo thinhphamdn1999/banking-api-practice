@@ -12,6 +12,8 @@ import { createErrorResponse, sendInternalError } from '@/common/utils/error-res
 
 import { UserApplicationService } from '@/modules/user/application/user.application';
 
+import { toUserDTO } from '@/modules/user/entry/user.dto';
+
 export class UserController {
   constructor(private readonly userService: UserApplicationService) {
     this.getUsers = this.getUsers.bind(this);
@@ -24,7 +26,7 @@ export class UserController {
   async getCurrentUser(req: Request, res: Response) {
     try {
       const user = await this.userService.getUserById(req.user!.id as string);
-      return res.status(HttpStatusCode.OK).json(user);
+      return res.status(HttpStatusCode.OK).json(toUserDTO(user));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -49,7 +51,10 @@ export class UserController {
         },
         req.query,
       );
-      return res.status(HttpStatusCode.OK).json(result);
+      return res.status(HttpStatusCode.OK).json({
+        data: result.data.map(toUserDTO),
+        metadata: result.metadata,
+      });
     } catch {
       return sendInternalError(res, 'Failed to fetch user list');
     }
@@ -58,7 +63,7 @@ export class UserController {
   async getUserById(req: Request, res: Response) {
     try {
       const user = await this.userService.getUserById(req.params.id as string);
-      return res.status(HttpStatusCode.OK).json(user);
+      return res.status(HttpStatusCode.OK).json(toUserDTO(user));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -75,7 +80,7 @@ export class UserController {
   async deActiveUser(req: Request, res: Response) {
     try {
       const user = await this.userService.deActiveUser(req.params.id as string);
-      return res.status(HttpStatusCode.OK).json(user);
+      return res.status(HttpStatusCode.OK).json(toUserDTO(user));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -92,7 +97,7 @@ export class UserController {
   async activateUser(req: Request, res: Response) {
     try {
       const user = await this.userService.activateUser(req.params.id as string);
-      return res.status(HttpStatusCode.OK).json(user);
+      return res.status(HttpStatusCode.OK).json(toUserDTO(user));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.USER_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(

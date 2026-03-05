@@ -12,13 +12,18 @@ A Node.js REST API for core banking operations — user management, bank account
 | ORM | TypeORM |
 | Database | SQLite |
 | Auth | Clerk (`@clerk/express`) |
+| Validation | Zod |
 | API Docs | Swagger UI (`swagger-ui-express`) |
 | Testing | Jest + Supertest |
 | Package Manager | pnpm |
 
 ## Architecture
 
-The project follows a **component-based layered architecture**. Each domain (user, bank-account, transaction) is self-contained:
+The project follows a **component-based layered architecture**. Each domain (user, bank-account, transaction) is self-contained with three layers:
+
+- **`domain/`** — pure business logic; entities, repositories, domain services. No HTTP concerns.
+- **`application/`** — orchestration layer; coordinates cross-domain operations (e.g. transaction debit/credit across accounts).
+- **`entry/`** — HTTP boundary; controllers, routes, Zod input validation, DTO output mapping.
 
 ```
 src/
@@ -28,23 +33,28 @@ src/
 │   ├── databases/
 │   │   └── migrations/ # TypeORM migration files
 │   ├── middleware/     # Auth, role guard, rate-limit, attach-db-user
-│   ├── repository/     # Base repository
-│   └── types/          # Shared TypeScript types
+│   ├── repository/     # Base repository (pagination, CRUD helpers)
+│   ├── types/          # Shared TypeScript types
+│   └── utils/          # Shared utility functions (error response, money, pagination)
 ├── modules/
 │   ├── bank-account/
-│   │   ├── domain/     # Entity, repository, service
-│   │   ├── entry/      # Controller, routes, tests
+│   │   ├── application/ # BankAccountApplicationService (account number generation, user validation)
+│   │   ├── domain/      # Entity, repository, BankAccountService
+│   │   ├── entry/       # Controller, routes, DTO (Zod schemas + output mapper), tests
 │   │   └── types/
 │   ├── transaction/
-│   │   ├── domain/
-│   │   ├── entry/      # Controller, routes, mapper, tests
-│   │   └── types/
-│   ├── user/
-│   │   ├── domain/     # Entity, repository, service, external (Clerk)
-│   │   ├── entry/      # Controller, routes, tests
+│   │   ├── application/ # TransactionApplicationService (cross-domain debit/credit + DB transaction)
+│   │   ├── domain/      # Entity, repository, TransactionService
+│   │   ├── entry/       # Controller, routes, DTO (Zod schemas + output mapper), tests
 │   │   ├── types/
-│   │   └── webhooks/   # Clerk webhook handler
-│   └── webhook/        # Webhook HTTP entry point
+│   │   └── utils/       # resolveTransactionName helper
+│   ├── user/
+│   │   ├── application/ # UserApplicationService (thin delegation wrapper)
+│   │   ├── domain/      # Entity, repository, UserService, external (Clerk)
+│   │   ├── entry/       # Controller, routes, DTO (output mapper), tests
+│   │   ├── types/
+│   │   └── webhooks/    # Clerk webhook handler
+│   └── webhook/         # Webhook HTTP entry point
 └── docs/               # OpenAPI YAML spec
 ```
 

@@ -16,15 +16,15 @@ import {
 } from '@/modules/transaction/types/transaction';
 import { UserRole } from '@/modules/user/types/user';
 
+import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
+
 import { TransactionApplicationService } from '@/modules/transaction/application/transaction.application';
 
-import { transactionMapper } from '@/modules/transaction/entry/transaction.mapper';
-
 import {
-  createErrorResponse,
-  getInvalidErrorList,
-  sendInternalError,
-} from '@/common/utils/error-response';
+  CreateTransactionSchema,
+  UpdateTransactionSchema,
+  toTransactionDTO,
+} from '@/modules/transaction/entry/transaction.dto';
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionApplicationService) {
@@ -67,7 +67,7 @@ export class TransactionController {
       );
 
       return res.status(HttpStatusCode.OK).json({
-        data: result.data.map((transaction) => transactionMapper(transaction)),
+        data: result.data.map(toTransactionDTO),
         metadata: result.metadata,
       });
     } catch {
@@ -85,7 +85,7 @@ export class TransactionController {
         role === UserRole.ADMIN,
       );
 
-      return res.status(HttpStatusCode.OK).json(transactionMapper(transaction));
+      return res.status(HttpStatusCode.OK).json(toTransactionDTO(transaction));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.TRANSACTION_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
@@ -105,90 +105,37 @@ export class TransactionController {
   }
 
   async createTransaction(req: Request, res: Response) {
+    const parsed = CreateTransactionSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json(
+        createErrorResponse({
+          statusCode: HttpStatusCode.BAD_REQUEST,
+          errors: parsed.error.issues.map((issue) => ({
+            errCode: ERROR_CODES.INVALID_REQUEST,
+            field: ['transaction', ...issue.path].join('.'),
+            message: issue.message,
+          })),
+        }),
+      );
+    }
+
     try {
-      const { type, amount, sourceAccountId, destinationAccountId, description, idempotencyKey } =
-        req.body;
-
-      const errorList = [];
-
-      switch (type) {
-        case TransactionType.DEPOSIT:
-          if (!destinationAccountId) {
-            errorList.push({
-              property: 'destinationAccountId',
-              description: 'destinationAccountId is required for deposit money',
-            });
-          }
-
-          if (sourceAccountId) {
-            errorList.push({
-              property: 'sourceAccountId',
-              description: 'sourceAccountId should not be provided for deposit money',
-            });
-          }
-          break;
-        case TransactionType.WITHDRAW:
-          if (!sourceAccountId) {
-            errorList.push({
-              property: 'sourceAccountId',
-              description: 'sourceAccountId is required for withdraw money',
-            });
-          }
-
-          if (destinationAccountId) {
-            errorList.push({
-              property: 'destinationAccountId',
-              description: 'destinationAccountId should not be provided for withdraw money',
-            });
-          }
-          break;
-        case TransactionType.TRANSFER:
-          if (!destinationAccountId) {
-            errorList.push({
-              property: 'destinationAccountId',
-              description: 'destinationAccountId is required for transfer money',
-            });
-          }
-          if (!sourceAccountId) {
-            errorList.push({
-              property: 'sourceAccountId',
-              description: 'sourceAccountId is required for transfer money',
-            });
-          }
-          break;
-        default:
-          errorList.push({
-            property: 'type',
-            description: 'Transaction type is one of deposit, withdraw, transfer',
-          });
-      }
-
-      if (!idempotencyKey) {
-        errorList.push({
-          property: 'idempotencyKey',
-          description: 'idempotencyKey is required for create a transaction',
-        });
-      }
-
-      if (errorList.length > 0) {
-        return res.status(HttpStatusCode.BAD_REQUEST).json(
-          createErrorResponse({
-            statusCode: HttpStatusCode.BAD_REQUEST,
-            errors: getInvalidErrorList({ prefix: 'transaction', properties: errorList }),
-          }),
-        );
-      }
+      const { type, amount, idempotencyKey, description } = parsed.data;
+      const sourceAccountId =
+        'sourceAccountId' in parsed.data ? parsed.data.sourceAccountId : undefined;
+      const destinationAccountId =
+        'destinationAccountId' in parsed.data ? parsed.data.destinationAccountId : undefined;
 
       const transaction = await this.transactionService.createTransaction({
+        type,
         amount,
         idempotencyKey,
-        type,
         description,
-        destinationAccountId,
         sourceAccountId,
+        destinationAccountId,
       });
 
-      return res.status(HttpStatusCode.CREATED).json(transactionMapper(transaction));
+      return res.status(HttpStatusCode.CREATED).json(toTransactionDTO(transaction));
     } catch (error: unknown) {
       if (error instanceof BaseError) {
         if (error.message === ERROR_CODES.INVALID_AMOUNT) {
@@ -257,19 +204,32 @@ export class TransactionController {
   }
 
   async updateTransaction(req: Request, res: Response) {
+    const parsed = UpdateTransactionSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(HttpStatusCode.BAD_REQUEST).json(
+        createErrorResponse({
+          statusCode: HttpStatusCode.BAD_REQUEST,
+          errors: parsed.error.issues.map((issue) => ({
+            errCode: ERROR_CODES.INVALID_REQUEST,
+            field: ['transaction', ...issue.path].join('.'),
+            message: issue.message,
+          })),
+        }),
+      );
+    }
+
     try {
       const transactionId = req.params.id;
-      const { description } = req.body;
       const { id: userId, role } = req.user ?? {};
 
       const transaction = await this.transactionService.updateTransaction(
         transactionId as string,
-        { description },
+        { description: parsed.data.description },
         userId as string,
         role === UserRole.ADMIN,
       );
 
-      return res.status(HttpStatusCode.OK).json(transactionMapper(transaction));
+      return res.status(HttpStatusCode.OK).json(toTransactionDTO(transaction));
     } catch (error: unknown) {
       if (error instanceof BaseError && error.message === ERROR_CODES.TRANSACTION_NOT_FOUND) {
         return res.status(HttpStatusCode.NOT_FOUND).json(
