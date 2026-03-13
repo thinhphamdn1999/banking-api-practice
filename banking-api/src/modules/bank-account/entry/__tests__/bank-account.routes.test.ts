@@ -29,8 +29,7 @@ describe('Bank Account Routes', () => {
   });
 
   beforeEach(async () => {
-    await bankAccountRepo.clear();
-    await userRepo.clear();
+    await TestHelper.instance.clearAllTables();
 
     await seedUser();
   });
@@ -176,7 +175,7 @@ describe('Bank Account Routes', () => {
 
   describe('GET /api/bank-accounts/:id', () => {
     it('should return 404 if user not found', async () => {
-      const res = await request(app).get('/api/bank-accounts/non-existing-id');
+      const res = await request(app).get('/api/bank-accounts/00000000-0000-0000-0000-000000000000');
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -304,7 +303,7 @@ describe('Bank Account Routes', () => {
 
     it('should return 404 if bank account not found', async () => {
       const res = await request(app)
-        .put('/api/bank-accounts/non-existing-id')
+        .put('/api/bank-accounts/00000000-0000-0000-0000-000000000000')
         .send({ name: 'Test' });
 
       expect(res.status).toBe(404);

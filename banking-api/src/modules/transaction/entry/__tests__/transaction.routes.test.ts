@@ -31,9 +31,7 @@ describe('Transaction Routes', () => {
   });
 
   beforeEach(async () => {
-    await transactionRepo.clear();
-    await bankAccountRepo.clear();
-    await userRepo.clear();
+    await TestHelper.instance.clearAllTables();
 
     await seedUser();
     await seedBankAccounts();
@@ -393,7 +391,7 @@ describe('Transaction Routes', () => {
     });
 
     it('should return 404 if transaction not found', async () => {
-      const res = await request(app).get('/api/transactions/non-existing-id');
+      const res = await request(app).get('/api/transactions/00000000-0000-0000-0000-000000000000');
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -605,7 +603,7 @@ describe('Transaction Routes', () => {
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
-          destinationAccountId: 'non-existing-id',
+          destinationAccountId: '00000000-0000-0000-0000-000000000000',
         });
 
       expect(res.status).toBe(400);
@@ -619,7 +617,7 @@ describe('Transaction Routes', () => {
         .send({
           type: 'withdraw',
           amount: { amount: 100, currency: 'usd' },
-          sourceAccountId: 'non-existing-id',
+          sourceAccountId: '00000000-0000-0000-0000-000000000000',
         });
 
       expect(res.status).toBe(400);
@@ -733,7 +731,7 @@ describe('Transaction Routes', () => {
 
     it('should return 404 if transaction not found when updating', async () => {
       const res = await request(app)
-        .put('/api/transactions/non-existing-id')
+        .put('/api/transactions/00000000-0000-0000-0000-000000000000')
         .send({ description: 'test' });
 
       expect(res.status).toBe(404);

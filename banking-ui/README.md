@@ -41,7 +41,7 @@ A React + TypeScript frontend for the Banking API. Supports two roles — regula
 
 - Node.js v22
 - pnpm v10
-- [Banking API](../banking-api) running locally
+- [Banking API](../banking-api) running locally (or via Docker)
 
 ## Quickstart
 
@@ -58,13 +58,23 @@ pnpm install
 3. Create `.env` from `.env.example` and fill in the values:
 ```env
 VITE_CLERK_PUBLISHABLE_KEY=
-VITE_API_BASE_URL=http://localhost:3000
+VITE_API_BASE_URL=
 ```
 
 4. Start the development server
 ```bash
 pnpm run dev
 ```
+
+## Running with Docker
+
+`VITE_*` variables are baked into the bundle at build time — ensure `.env` exists before building.
+
+```bash
+docker compose up --build
+```
+
+The app will be available at `http://localhost:80`, served by nginx as static files.
 
 ## Scripts
 

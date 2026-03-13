@@ -42,7 +42,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   deletedAt!: Date;
 
   @Column({ type: 'varchar', length: 20, default: UserStatus.ACTIVE })

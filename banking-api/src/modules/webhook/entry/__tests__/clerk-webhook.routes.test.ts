@@ -27,7 +27,7 @@ describe('Clerk Webhook Route', () => {
   });
 
   beforeEach(async () => {
-    await userRepo.clear();
+    await TestHelper.instance.clearAllTables();
     jest.clearAllMocks();
   });
 

@@ -10,7 +10,7 @@ A Node.js REST API for core banking operations — user management, bank account
 | Framework | Express 5 |
 | Language | TypeScript |
 | ORM | TypeORM |
-| Database | SQLite |
+| Database | PostgreSQL |
 | Auth | Clerk (`@clerk/express`) |
 | Validation | Zod |
 | API Docs | Swagger UI (`swagger-ui-express`) |
@@ -62,6 +62,7 @@ src/
 
 - Node.js v22
 - pnpm v10
+- PostgreSQL (or Docker)
 
 ## Quickstart
 
@@ -82,6 +83,12 @@ PORT=
 CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 CLERK_WEBHOOK_SIGNING_SECRET=
+CORS_ORIGIN=
+DATABASE_HOST=
+DATABASE_PORT=
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
 ```
 
 4. Set up the database
@@ -104,6 +111,20 @@ pnpm start
 ngrok http {PORT}
 ```
 
+## Running with Docker
+
+The easiest way to run the full stack (API + PostgreSQL) is with Docker Compose.
+
+1. Ensure `.env` exists with all required variables (see Quickstart step 3)
+2. Start all services:
+```bash
+docker compose up --build
+```
+
+The API will be available at `http://localhost:3000`. PostgreSQL data is persisted in a Docker volume (`db-data`).
+
+> **Note:** Migrations do not run automatically in Docker. After the first `docker compose up`, run migrations manually from your host machine pointing to the containerized DB, or add a migration step to the startup command.
+
 ## Database Migrations
 
 Schema is managed via TypeORM migrations — `synchronize` is disabled in all environments.
@@ -124,7 +145,7 @@ pnpm migration:run
 
 **Fresh database setup (e.g. after pulling changes):**
 ```bash
-rm banking-api.sqlite   # delete existing DB if any
+pnpm migration:revert   # drop existing tables if any
 pnpm migration:run
 ```
 

@@ -40,6 +40,16 @@ export class TestHelper {
     setDataSource(TestDataSource);
   }
 
+  async clearAllTables() {
+    const queryRunner = TestDataSource.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      await queryRunner.query('TRUNCATE TABLE "Transaction", "BankAccount", "User" CASCADE');
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   /**
    * Destroys the test database connection if it is initialized. This should be called after all tests have completed to clean up resources and ensure that the test database connection is properly closed.
    * @returns - A promise that resolves when the test database connection is destroyed.
