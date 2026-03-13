@@ -106,7 +106,7 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
    */
   async create(entity: DeepPartial<T>, entityManager?: EntityManager): Promise<T> {
     const newEntity = this.getRepository(entityManager).create(entity);
-    return await this.save(newEntity);
+    return await this.save(newEntity, entityManager);
   }
 
   /**

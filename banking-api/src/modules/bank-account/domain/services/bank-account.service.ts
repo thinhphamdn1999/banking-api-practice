@@ -54,11 +54,11 @@ export class BankAccountService {
       throw new BaseError({ message: ERROR_CODES.SOURCE_ACCOUNT_NOT_FOUND });
     }
 
-    if (account.balance < amount) {
+    if (Number(account.balance) < amount) {
       throw new BaseError({ message: ERROR_CODES.INSUFFICIENT_BALANCE });
     }
 
-    account.balance -= amount;
+    account.balance = Number(account.balance) - amount;
     await this.bankAccountRepository.save(account, manager);
 
     return account;
@@ -71,7 +71,7 @@ export class BankAccountService {
       throw new BaseError({ message: ERROR_CODES.DESTINATION_ACCOUNT_NOT_FOUND });
     }
 
-    account.balance += amount;
+    account.balance = Number(account.balance) + amount;
     await this.bankAccountRepository.save(account, manager);
 
     return account;

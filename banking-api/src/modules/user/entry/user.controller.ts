@@ -73,6 +73,7 @@ export class UserController {
           }),
         );
       }
+      console.log(error);
       return sendInternalError(res, 'Failed to fetch a user');
     }
   }

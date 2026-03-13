@@ -2,7 +2,7 @@ import path from 'path';
 
 import { DataSource } from 'typeorm';
 
-import { isProduction } from './environment';
+import environmentConfig, { isProduction } from './environment';
 
 import { findFiles } from '../utils/file-loader';
 
@@ -23,8 +23,12 @@ const migrationsPath = path.join(
  * Run `pnpm migration:run` to apply pending migrations on a fresh database.
  */
 export const AppDataSource = new DataSource({
-  type: 'sqlite',
-  database: 'banking-api.sqlite',
+  type: 'postgres',
+  host: environmentConfig.database.host,
+  port: environmentConfig.database.port,
+  database: environmentConfig.database.name,
+  username: environmentConfig.database.user,
+  password: environmentConfig.database.password,
   logging: true,
   synchronize: false,
   entities: findFiles('entity'),

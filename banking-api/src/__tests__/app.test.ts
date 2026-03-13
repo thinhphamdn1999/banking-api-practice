@@ -55,6 +55,7 @@ describe('App', () => {
 
   describe('Rate Limiting', () => {
     beforeAll(async () => {
+      await TestHelper.instance.clearAllTables();
       await userRepo.save(
         userRepo.create({
           clerkUserId: 'test_user_id',
@@ -65,7 +66,7 @@ describe('App', () => {
     });
 
     afterAll(async () => {
-      await userRepo.clear();
+      await TestHelper.instance.clearAllTables();
     });
 
     it('should return 429 after exceeding the rate limit', async () => {

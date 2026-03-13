@@ -29,7 +29,7 @@ describe('User Routes', () => {
   });
 
   beforeEach(async () => {
-    await userRepo.clear();
+    await TestHelper.instance.clearAllTables();
   });
 
   afterEach(() => {
@@ -194,7 +194,7 @@ describe('User Routes', () => {
 
     it('should return 404 if user not found', async () => {
       await seedUser();
-      const res = await request(app).get('/api/users/non-existing-id');
+      const res = await request(app).get('/api/users/00000000-0000-0000-0000-000000000000');
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -221,7 +221,9 @@ describe('User Routes', () => {
   describe('POST /api/users/:id/de-active', () => {
     it('should return 404 if user not found', async () => {
       await seedUser();
-      const res = await request(app).post('/api/users/non-existing-id/de-active');
+      const res = await request(app).post(
+        '/api/users/00000000-0000-0000-0000-000000000000/de-active',
+      );
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -261,7 +263,9 @@ describe('User Routes', () => {
   describe('POST /api/users/:id/activate', () => {
     it('should return 404 if user not found', async () => {
       await seedUser();
-      const res = await request(app).post('/api/users/non-existing-id/activate');
+      const res = await request(app).post(
+        '/api/users/00000000-0000-0000-0000-000000000000/activate',
+      );
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');

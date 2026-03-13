@@ -49,9 +49,7 @@ export class BankAccountRepository extends BaseRepository<BankAccount> {
   async findByIdWithLock(id: string, manager: EntityManager) {
     return manager.getRepository(BankAccount).findOne({
       where: { id },
-      // SQLite does not support lock mode
-      // TODO: Switch to other tools (PostgreSQL)
-      // lock: { mode: 'pessimistic_write' },
+      lock: { mode: 'pessimistic_write' },
     });
   }
 }

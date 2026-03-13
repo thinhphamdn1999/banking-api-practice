@@ -3,14 +3,18 @@ import { DataSource } from 'typeorm';
 import { User } from '@/modules/user/domain/entities/user.entity';
 import { BankAccount } from '@/modules/bank-account/domain/entities/bank-account.entity';
 import { Transaction } from '@/modules/transaction/domain/entities/transaction.entity';
+import environmentConfig from '../environment';
 
 /**
- * The test data source instance used for testing. It is configured to use an in-memory SQLite database, which allows for fast and isolated tests without affecting the main application database. The entities are explicitly listed to ensure that only the relevant entities are included in the test database schema.
+ * The test data source instance used for testing. It is configured to use a PostgreSQL database, which ensures tests run against the same database engine as production. The entities are explicitly listed to ensure that only the relevant entities are included in the test database schema.
  */
 export const TestDataSource = new DataSource({
-  type: 'sqlite',
-  database: ':memory:',
-  dropSchema: true,
+  type: 'postgres',
+  host: environmentConfig.database.host,
+  port: Number(environmentConfig.database.port),
+  database: environmentConfig.database.testName,
+  username: environmentConfig.database.user,
+  password: environmentConfig.database.password,
   synchronize: true,
   logging: false,
   entities: [User, BankAccount, Transaction],
