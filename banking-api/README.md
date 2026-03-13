@@ -113,17 +113,15 @@ ngrok http {PORT}
 
 ## Running with Docker
 
-The easiest way to run the full stack (API + PostgreSQL) is with Docker Compose.
+The easiest way to run the full stack (API + PostgreSQL) is with Docker Compose from the **root `node-js/` directory**.
 
-1. Ensure `.env` exists with all required variables (see Quickstart step 3)
+1. Ensure `banking-api/.env` exists with all required variables (see Quickstart step 3)
 2. Start all services:
 ```bash
 docker compose up --build
 ```
 
-The API will be available at `http://localhost:3000`. PostgreSQL data is persisted in a Docker volume (`db-data`).
-
-> **Note:** Migrations do not run automatically in Docker. After the first `docker compose up`, run migrations manually from your host machine pointing to the containerized DB, or add a migration step to the startup command.
+The API will be available at `http://localhost:3000`. Migrations run automatically on startup. PostgreSQL data is persisted via a bind mount at `./banking-api/data/postgres`.
 
 ## Database Migrations
 

@@ -3,21 +3,39 @@
 Before running the application, ensure you have a `.env` file in the `banking-api/` directory with the following variables:
 
 ```
-DATABASE_NAME=banking-api
-DATABASE_USER=your_db_user
-DATABASE_PASSWORD=your_db_password
+PORT=
+CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+CLERK_WEBHOOK_SIGNING_SECRET=
+CORS_ORIGIN=
+DATABASE_HOST=
+DATABASE_PORT=
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
+DATABASE_TEST_NAME=
+
+# PostgreSQL container vars (used by the postgres Docker image)
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
 ```
 
-Docker Compose reads this file automatically to configure both the `server` and `db` services.
+Docker Compose reads this file automatically to configure both the `api` and `db` services.
 
 ### Building and running your application
 
-When you're ready, start your application by running:
-`docker compose up --build`.
+Run from the **root `node-js/` directory**:
+
+```bash
+docker compose up --build
+```
 
 Your application will be available at http://localhost:3000.
 
-The PostgreSQL database runs as a separate container and data is persisted in a Docker volume (`db-data`) across restarts.
+Migrations run automatically on startup — no manual step required.
+
+PostgreSQL data is persisted via a bind mount at `./banking-api/data/postgres` on your host machine.
 
 ### Deploying your application to the cloud
 

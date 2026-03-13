@@ -68,7 +68,9 @@ pnpm run dev
 
 ## Running with Docker
 
-`VITE_*` variables are baked into the bundle at build time — ensure `.env` exists before building.
+`VITE_*` variables are baked into the bundle at build time — ensure `banking-ui/.env` exists before building.
+
+Run from the **root `node-js/` directory**:
 
 ```bash
 docker compose up --build
