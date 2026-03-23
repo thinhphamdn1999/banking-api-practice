@@ -20,10 +20,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
 export const DRAWER_WIDTH = 240;
 
 interface NavItem {
@@ -42,10 +38,6 @@ const NAV_ITEMS: NavItem[] = [
 const ADMIN_NAV_ITEMS: NavItem[] = [
   { label: 'Users', path: ROUTES.ADMIN_USERS, icon: GroupOutlinedIcon },
 ];
-
-// ---------------------------------------------------------------------------
-// NavItemRow — single navigation link
-// ---------------------------------------------------------------------------
 
 const NavItemRow = ({ item }: { item: NavItem }) => {
   const { pathname } = useLocation();
@@ -77,10 +69,6 @@ const NavItemRow = ({ item }: { item: NavItem }) => {
     </ListItem>
   );
 };
-
-// ---------------------------------------------------------------------------
-// SidebarContent — shared between permanent and temporary drawers
-// ---------------------------------------------------------------------------
 
 const SidebarContent = () => {
   const { data: currentUser } = useCurrentUser();
@@ -131,10 +119,6 @@ const SidebarContent = () => {
     </Box>
   );
 };
-
-// ---------------------------------------------------------------------------
-// Sidebar — responsive: permanent on desktop, temporary on mobile
-// ---------------------------------------------------------------------------
 
 interface SidebarProps {
   mobileOpen: boolean;

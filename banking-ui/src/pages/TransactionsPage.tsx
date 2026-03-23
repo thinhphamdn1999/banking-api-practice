@@ -22,8 +22,8 @@ import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 
 import { StatusChip } from '@/components/common/StatusChip';
-import { CreateTransactionModal } from '@/components/transactions/CreateTransactionModal';
-import { EditDescriptionModal } from '@/components/transactions/EditDescriptionModal';
+import { CreateTransactionModal } from '@/components/features/transactions/CreateTransactionModal';
+import { EditDescriptionModal } from '@/components/features/transactions/EditDescriptionModal';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useIsAdmin } from '@/hooks/useCurrentUser';
 import { useTransactions } from '@/hooks/useTransactions';

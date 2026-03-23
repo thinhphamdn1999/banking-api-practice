@@ -2,6 +2,7 @@ import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
+
 import { usersService } from '@/services/users.service';
 
 export const useCurrentUser = () => {
@@ -15,7 +16,6 @@ export const useCurrentUser = () => {
   });
 };
 
-/** Convenience hook — returns true when the current user has the admin role. */
 export const useIsAdmin = () => {
   const { data: currentUser } = useCurrentUser();
   return currentUser?.role === 'admin';

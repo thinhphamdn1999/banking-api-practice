@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 
-import { AdminRoute } from '@/components/router/AdminRoute';
-import { ProtectedRoute } from '@/components/router/ProtectedRoute';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { AdminRoute } from '@/routes/AdminRoute';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
+import { MainLayout } from '@/components/layouts/MainLayout';
 import { ROUTES } from '@/constants/routes';
 import { SignInPage } from '@/pages/SignInPage';
 import { SignUpPage } from '@/pages/SignUpPage';

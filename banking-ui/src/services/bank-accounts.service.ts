@@ -4,7 +4,6 @@ import type { BankAccount } from '@/types/bank-account';
 import { apiClient } from './api';
 
 export interface GetBankAccountsParams extends PaginationParams {
-  /** Admin-only: filter accounts belonging to a specific DB user ID. */
   userId?: string;
 }
 

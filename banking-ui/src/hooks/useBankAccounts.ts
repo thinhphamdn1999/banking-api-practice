@@ -2,13 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
-import { bankAccountsService } from '@/services/bank-accounts.service';
-import type { GetBankAccountsParams } from '@/services/bank-accounts.service';
-import { getApiErrorMessage } from '@/utils/error';
 
-// ---------------------------------------------------------------------------
-// Queries
-// ---------------------------------------------------------------------------
+import type { GetBankAccountsParams } from '@/services/bank-accounts.service';
+
+import { bankAccountsService } from '@/services/bank-accounts.service';
+
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useBankAccounts = (params?: GetBankAccountsParams) =>
   useQuery({
@@ -22,10 +21,6 @@ export const useBankAccount = (id: string) =>
     queryFn: () => bankAccountsService.getById(id),
     enabled: !!id,
   });
-
-// ---------------------------------------------------------------------------
-// Mutations
-// ---------------------------------------------------------------------------
 
 export const useCreateBankAccount = () => {
   const queryClient = useQueryClient();

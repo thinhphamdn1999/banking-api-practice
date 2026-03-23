@@ -10,5 +10,4 @@ export interface BankAccount {
   user?: Pick<User, 'id' | 'firstName' | 'lastName' | 'email'>;
 }
 
-// Minimal shape used inside nested Transaction responses
 export type BankAccountSummary = Pick<BankAccount, 'id' | 'name' | 'accountNumber'>;

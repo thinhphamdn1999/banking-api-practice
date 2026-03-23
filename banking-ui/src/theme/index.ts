@@ -2,11 +2,8 @@ import { createTheme } from '@mui/material/styles';
 import { colors } from './colors';
 import { createTypographyVariants } from './typography';
 
-// Step 1: base theme — used only to extract default breakpoints (xs/sm/md/lg/xl)
-// so we can pass them into createTypographyVariants for responsive font sizes.
 const baseTheme = createTheme();
 
-// Step 2: full theme — palette, typography, shape, and component overrides
 const theme = createTheme({
   palette: {
     primary: {

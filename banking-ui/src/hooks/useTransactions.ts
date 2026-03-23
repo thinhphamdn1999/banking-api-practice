@@ -2,13 +2,12 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
-import { transactionsService } from '@/services/transactions.service';
-import type { CreateTransactionPayload, GetTransactionsParams } from '@/types/transaction';
-import { getApiErrorMessage } from '@/utils/error';
 
-// ---------------------------------------------------------------------------
-// Queries
-// ---------------------------------------------------------------------------
+import type { CreateTransactionPayload, GetTransactionsParams } from '@/types/transaction';
+
+import { transactionsService } from '@/services/transactions.service';
+
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useTransactions = (params?: GetTransactionsParams) =>
   useQuery({
@@ -23,10 +22,6 @@ export const useTransaction = (id: string) =>
     queryFn: () => transactionsService.getById(id),
     enabled: !!id,
   });
-
-// ---------------------------------------------------------------------------
-// Mutations
-// ---------------------------------------------------------------------------
 
 export const useCreateTransaction = () => {
   const queryClient = useQueryClient();

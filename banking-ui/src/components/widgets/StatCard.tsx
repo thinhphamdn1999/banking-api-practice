@@ -4,10 +4,6 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
-
 interface StatCardProps {
   title: string;
   value: string;
@@ -16,10 +12,6 @@ interface StatCardProps {
   iconColor: string;
   isLoading?: boolean;
 }
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 
 export const StatCard = ({ title, value, icon, iconBg, iconColor, isLoading }: StatCardProps) => (
   <Paper sx={{ p: 2.5, height: '100%' }}>

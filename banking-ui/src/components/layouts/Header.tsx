@@ -8,10 +8,6 @@ import { useLocation } from 'react-router-dom';
 
 import { ROUTES } from '@/constants/routes';
 
-// ---------------------------------------------------------------------------
-// Page title map — derived from the current route pathname
-// ---------------------------------------------------------------------------
-
 const PAGE_TITLES: Record<string, string> = {
   [ROUTES.DASHBOARD]: 'Dashboard',
   [ROUTES.ACCOUNTS]: 'Bank Accounts',
@@ -24,10 +20,6 @@ const getPageTitle = (pathname: string): string => {
   if (pathname.startsWith('/admin/users/')) return 'User Detail';
   return PAGE_TITLES[pathname] ?? 'Banking App';
 };
-
-// ---------------------------------------------------------------------------
-// Header
-// ---------------------------------------------------------------------------
 
 interface HeaderProps {
   onMenuOpen: () => void;

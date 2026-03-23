@@ -13,10 +13,6 @@ import TextField from '@mui/material/TextField';
 import { useCreateBankAccount, useUpdateBankAccount } from '@/hooks/useBankAccounts';
 import type { BankAccount } from '@/types/bank-account';
 
-// ---------------------------------------------------------------------------
-// Schema
-// ---------------------------------------------------------------------------
-
 const schema = z.object({
   name: z
     .string()
@@ -26,9 +22,6 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
 
 interface AccountFormModalProps {
   open: boolean;
@@ -37,9 +30,7 @@ interface AccountFormModalProps {
   account?: BankAccount;
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+
 
 export const AccountFormModal = ({ open, onClose, account }: AccountFormModalProps) => {
   const isEdit = !!account;

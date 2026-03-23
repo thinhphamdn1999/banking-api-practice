@@ -16,10 +16,6 @@ import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useCreateTransaction } from '@/hooks/useTransactions';
 import type { TransactionType } from '@/types/transaction';
 
-// ---------------------------------------------------------------------------
-// Validation schema
-// ---------------------------------------------------------------------------
-
 const schema = z
   .object({
     type: z.enum(['deposit', 'withdraw', 'transfer']),
@@ -65,18 +61,13 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>;
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
 
 interface CreateTransactionModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+
 
 export const CreateTransactionModal = ({ open, onClose }: CreateTransactionModalProps) => {
   const { data: accountsResponse } = useBankAccounts();

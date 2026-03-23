@@ -11,19 +11,12 @@ import TextField from '@mui/material/TextField';
 import { useUpdateTransactionDescription } from '@/hooks/useTransactions';
 import type { Transaction } from '@/types/transaction';
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
 
 interface EditDescriptionModalProps {
   open: boolean;
   onClose: () => void;
   transaction: Transaction | null;
 }
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 
 export const EditDescriptionModal = ({ open, onClose, transaction }: EditDescriptionModalProps) => {
   const updateDescription = useUpdateTransactionDescription();

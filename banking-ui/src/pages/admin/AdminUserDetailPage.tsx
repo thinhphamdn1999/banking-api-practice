@@ -21,7 +21,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import type { GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
-import { AccountCard } from '@/components/bank-accounts/AccountCard';
+import { AccountCard } from '@/components/features/bank-accounts/AccountCard';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { StatusChip } from '@/components/common/StatusChip';
 import { QUERY_KEYS } from '@/constants/queryKeys';

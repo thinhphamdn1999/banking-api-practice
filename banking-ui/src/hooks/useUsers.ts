@@ -6,10 +6,6 @@ import { usersService } from '@/services/users.service';
 import type { GetUsersParams } from '@/services/users.service';
 import { getApiErrorMessage } from '@/utils/error';
 
-// ---------------------------------------------------------------------------
-// Queries
-// ---------------------------------------------------------------------------
-
 export const useUsers = (params?: GetUsersParams) =>
   useQuery({
     queryKey: [...QUERY_KEYS.USERS, params],
@@ -17,17 +13,12 @@ export const useUsers = (params?: GetUsersParams) =>
     placeholderData: keepPreviousData,
   });
 
-// Named useUserById to avoid collision with Clerk's useUser hook
 export const useUserById = (id: string) =>
   useQuery({
     queryKey: QUERY_KEYS.user(id),
     queryFn: () => usersService.getById(id),
     enabled: !!id,
   });
-
-// ---------------------------------------------------------------------------
-// Mutations
-// ---------------------------------------------------------------------------
 
 export const useDeactivateUser = () => {
   const queryClient = useQueryClient();

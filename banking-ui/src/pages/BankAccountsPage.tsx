@@ -7,8 +7,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 
-import { AccountCard } from '@/components/bank-accounts/AccountCard';
-import { AccountFormModal } from '@/components/bank-accounts/AccountFormModal';
+import { AccountCard } from '@/components/features/bank-accounts/AccountCard';
+import { AccountFormModal } from '@/components/features/bank-accounts/AccountFormModal';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useIsAdmin } from '@/hooks/useCurrentUser';
 import type { BankAccount } from '@/types/bank-account';

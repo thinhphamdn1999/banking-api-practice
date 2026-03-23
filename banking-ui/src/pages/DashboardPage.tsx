@@ -14,7 +14,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import dayjs from 'dayjs';
 
 import { StatusChip } from '@/components/common/StatusChip';
-import { CreateTransactionModal } from '@/components/transactions/CreateTransactionModal';
+import { CreateTransactionModal } from '@/components/features/transactions/CreateTransactionModal';
 import { StatCard } from '@/components/widgets/StatCard';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useIsAdmin } from '@/hooks/useCurrentUser';

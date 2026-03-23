@@ -15,18 +15,13 @@ import { ROUTES } from '@/constants/routes';
 import { colors } from '@/theme/colors';
 import type { BankAccount } from '@/types/bank-account';
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
 
 interface AccountCardProps {
   account: BankAccount;
   onEdit?: () => void;
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+
 
 export const AccountCard = ({ account, onEdit }: AccountCardProps) => {
   const navigate = useNavigate();

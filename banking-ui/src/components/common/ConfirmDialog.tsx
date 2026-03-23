@@ -6,27 +6,19 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
 
 interface ConfirmDialogProps {
   open: boolean;
   title: string;
   description: string;
-  /** Label for the confirm button. Defaults to "Confirm". */
   confirmLabel?: string;
-  /** Color of the confirm button. Defaults to "error" for destructive actions. */
   confirmColor?: 'error' | 'warning' | 'primary' | 'success';
-  /** Shows a spinner on the confirm button and disables both buttons while true. */
   isLoading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+
 
 export const ConfirmDialog = ({
   open,
