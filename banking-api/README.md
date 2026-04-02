@@ -225,5 +225,5 @@ pnpm test:watch
 
 ## Documents
 
-- API Design: [Google Doc](https://docs.google.com/document/d/1Kj6xx8fhK0Ang_ILdhWBFuQd_XcZLe9FbaLkjtue-eg/edit?tab=t.0)
-- Requirements: [Google Doc](https://docs.google.com/document/d/1KJdLPmKCXQfii4f_D6koGV-B7ABZ-6gdlZXACXanjkk/edit?tab=t.0)
+- API Design: [Google Doc](https://docs.google.com/document/d/1a3DEIEdO_INIbX6g89TIyXIWK7U2qRxrH568wX1onYA/edit?usp=sharing)
+- Requirements: [Google Doc](https://docs.google.com/document/d/1lNJCVgMk6-Sji6RWnYqDcNfyQRpXdT0P0IGwGvR-U5U/edit?usp=sharing)
