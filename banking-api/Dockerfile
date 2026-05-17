@@ -40,6 +40,8 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/src/docs ./src/docs
 
+RUN chown -R node:node /usr/src/app
+
 USER node
 
 EXPOSE 3000
