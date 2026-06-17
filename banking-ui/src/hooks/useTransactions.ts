@@ -2,24 +2,28 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
-
-import type { CreateTransactionPayload, GetTransactionsParams } from '@/types/transaction';
-
-import { transactionsService } from '@/services/transactions.service';
-
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { apiClient } from '@/services/api';
+import type { PaginatedResponse } from '@/types/api';
+import type { CreateTransactionPayload, GetTransactionsParams, Transaction } from '@/types/transaction';
 import { getApiErrorMessage } from '@/utils/error';
 
-export const useTransactions = (params?: GetTransactionsParams) =>
+export const useTransactions = (params?: GetTransactionsParams, options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: [...QUERY_KEYS.TRANSACTIONS, params],
-    queryFn: () => transactionsService.getAll(params),
+    queryFn: () =>
+      apiClient
+        .get<PaginatedResponse<Transaction>>(API_ROUTES.TRANSACTIONS.GET_TRANSACTIONS, { params })
+        .then((res) => res.data),
+    enabled: options?.enabled,
     placeholderData: keepPreviousData,
   });
 
 export const useTransaction = (id: string) =>
   useQuery({
-    queryKey: QUERY_KEYS.transaction(id),
-    queryFn: () => transactionsService.getById(id),
+    queryKey: QUERY_KEYS.TRANSACTION_BY_ID(id),
+    queryFn: () =>
+      apiClient.get<Transaction>(API_ROUTES.TRANSACTIONS.GET_TRANSACTION_BY_ID(id)).then((res) => res.data),
     enabled: !!id,
   });
 
@@ -28,9 +32,13 @@ export const useCreateTransaction = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   return useMutation({
-    mutationFn: (data: CreateTransactionPayload) => transactionsService.create(data),
+    mutationFn: ({ idempotencyKey, ...data }: CreateTransactionPayload) =>
+      apiClient
+        .post<Transaction>(API_ROUTES.TRANSACTIONS.GET_TRANSACTIONS, data, {
+          headers: { 'Idempotency-Key': idempotencyKey },
+        })
+        .then((res) => res.data),
     onSuccess: () => {
-      // Invalidate both — balance changes after every transaction
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BANK_ACCOUNTS });
       enqueueSnackbar('Transaction completed successfully.', { variant: 'success' });
@@ -49,10 +57,12 @@ export const useUpdateTransactionDescription = () => {
 
   return useMutation({
     mutationFn: ({ id, description }: { id: string; description: string }) =>
-      transactionsService.updateDescription(id, description),
+      apiClient
+        .put<Transaction>(API_ROUTES.TRANSACTIONS.GET_TRANSACTION_BY_ID(id), { description })
+        .then((res) => res.data),
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.transaction(id) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTION_BY_ID(id) });
       enqueueSnackbar('Description updated.', { variant: 'success' });
     },
     onError: (error) => {

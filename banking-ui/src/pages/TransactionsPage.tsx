@@ -54,7 +54,7 @@ export const TransactionsPage = () => {
   // Modal state
   // -------------------------------------------------------------------------
   const [createOpen, setCreateOpen] = useState(false);
-  const [editTx, setEditTx] = useState<Transaction | null>(null);
+  const [editTransaction, setEditTx] = useState<Transaction | null>(null);
 
   // -------------------------------------------------------------------------
   // Data
@@ -73,9 +73,9 @@ export const TransactionsPage = () => {
     ...(accountIds.length > 0 && { bankAccountIds: accountIds }),
   };
 
-  const { data: txResponse, isLoading } = useTransactions(queryParams);
-  const rows = txResponse?.data ?? [];
-  const rowCount = txResponse?.metadata?.totalCount ?? 0;
+  const { data: transactionsResponse, isLoading } = useTransactions(queryParams);
+  const rows = transactionsResponse?.data ?? [];
+  const rowCount = transactionsResponse?.metadata?.totalCount ?? 0;
 
   // -------------------------------------------------------------------------
   // Filter helpers
@@ -349,9 +349,9 @@ export const TransactionsPage = () => {
         <>
           <CreateTransactionModal open={createOpen} onClose={() => setCreateOpen(false)} />
           <EditDescriptionModal
-            open={!!editTx}
+            open={!!editTransaction}
             onClose={() => setEditTx(null)}
-            transaction={editTx}
+            transaction={editTransaction}
           />
         </>
       )}

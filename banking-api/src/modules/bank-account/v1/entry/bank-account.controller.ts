@@ -13,13 +13,13 @@ import { UserRole } from '@/modules/user/types/user';
 
 import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
-import { BankAccountApplicationService } from '@/modules/bank-account/application/bank-account.application';
+import { BankAccountApplicationService } from '@/modules/bank-account/v1/application/bank-account.application.v1.interface';
 
 import {
   CreateBankAccountSchema,
   UpdateBankAccountSchema,
   toBankAccountDTO,
-} from '@/modules/bank-account/entry/bank-account.dto';
+} from '@/modules/bank-account/v1/entry/bank-account.dto';
 
 export class BankAccountController {
   constructor(private readonly bankAccountApplicationService: BankAccountApplicationService) {

@@ -11,9 +11,9 @@ import { TransactionRepository } from '@/modules/transaction/domain/repository/t
 import { BankAccountRepository } from '@/modules/bank-account/domain/repository/bank-account.repository';
 import { TransactionService } from '@/modules/transaction/domain/services/transaction.service';
 import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
-import { TransactionApplicationService } from '@/modules/transaction/application/transaction.application';
+import { TransactionApplicationServiceV1 } from '@/modules/transaction/v1/application/transaction.application.v1';
 
-import { TransactionController } from '@/modules/transaction/entry/transaction.controller';
+import { TransactionController } from '@/modules/transaction/v1/entry/transaction.controller';
 
 const transactionRouter = Router();
 
@@ -23,7 +23,7 @@ const bankAccountRepository = new BankAccountRepository();
 const transactionService = new TransactionService(transactionRepository);
 const bankAccountService = new BankAccountService(bankAccountRepository);
 
-const transactionApplicationService = new TransactionApplicationService(
+const transactionApplicationService = new TransactionApplicationServiceV1(
   transactionService,
   bankAccountService,
   getDataSource(),

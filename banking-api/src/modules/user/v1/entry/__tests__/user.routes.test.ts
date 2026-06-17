@@ -55,7 +55,7 @@ describe('User Routes', () => {
   describe('GET /api/users', () => {
     it('should return list of users', async () => {
       await seedUser();
-      const res = await request(app).get('/api/users');
+      const res = await request(app).get('/api/v1/users');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(Array.isArray(res.body.data)).toBe(true);
@@ -83,7 +83,7 @@ describe('User Routes', () => {
       const users = await seedUser();
       await userRepo.update({ id: users[1].id }, { status: UserStatus.DE_ACTIVE });
 
-      const res = await request(app).get(`/api/users?status=${UserStatus.ACTIVE}`);
+      const res = await request(app).get(`/api/v1/users?status=${UserStatus.ACTIVE}`);
 
       expect(res.status).toBe(200);
       expect(res.body.metadata.totalCount).toBe(1);
@@ -94,7 +94,7 @@ describe('User Routes', () => {
       const users = await seedUser();
       await userRepo.update({ id: users[1].id }, { status: UserStatus.DE_ACTIVE });
 
-      const res = await request(app).get(`/api/users?status=${UserStatus.DE_ACTIVE}`);
+      const res = await request(app).get(`/api/v1/users?status=${UserStatus.DE_ACTIVE}`);
 
       expect(res.status).toBe(200);
       expect(res.body.metadata.totalCount).toBe(1);
@@ -103,7 +103,7 @@ describe('User Routes', () => {
 
     it('should return list of users with pagination', async () => {
       await seedUser();
-      const res = await request(app).get('/api/users?page=1&limit=10');
+      const res = await request(app).get('/api/v1/users?page=1&limit=10');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(Array.isArray(res.body.data)).toBe(true);
@@ -132,7 +132,7 @@ describe('User Routes', () => {
     it('should return the current authenticated user', async () => {
       const users = await seedUser();
 
-      const res = await request(app).get('/api/users/me');
+      const res = await request(app).get('/api/v1/users/me');
 
       expect(res.status).toBe(200);
       expect(res.body).toEqual(
@@ -152,7 +152,7 @@ describe('User Routes', () => {
         .spyOn(UserService.prototype, 'getUserById')
         .mockRejectedValueOnce(new BaseError({ message: ERROR_CODES.USER_NOT_FOUND }));
 
-      const res = await request(app).get('/api/users/me');
+      const res = await request(app).get('/api/v1/users/me');
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -160,7 +160,7 @@ describe('User Routes', () => {
 
     it('should return 401 if the authenticated Clerk user has no matching DB record', async () => {
       // No seed — DB is empty, attachDatabaseUser middleware returns 401
-      const res = await request(app).get('/api/users/me');
+      const res = await request(app).get('/api/v1/users/me');
 
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty('errors');
@@ -172,7 +172,7 @@ describe('User Routes', () => {
         .spyOn(UserService.prototype, 'getUserById')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).get('/api/users/me');
+      const res = await request(app).get('/api/v1/users/me');
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -186,7 +186,7 @@ describe('User Routes', () => {
         .spyOn(UserService.prototype, 'getUserById')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).get('/api/users/some-id');
+      const res = await request(app).get('/api/v1/users/some-id');
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -194,7 +194,7 @@ describe('User Routes', () => {
 
     it('should return 404 if user not found', async () => {
       await seedUser();
-      const res = await request(app).get('/api/users/00000000-0000-0000-0000-000000000000');
+      const res = await request(app).get('/api/v1/users/00000000-0000-0000-0000-000000000000');
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -203,7 +203,7 @@ describe('User Routes', () => {
     it('should return user if found', async () => {
       const user = await seedUser();
 
-      const res = await request(app).get(`/api/users/${user[1].id}`);
+      const res = await request(app).get(`/api/v1/users/${user[1].id}`);
 
       expect(res.status).toBe(200);
 
@@ -222,7 +222,7 @@ describe('User Routes', () => {
     it('should return 404 if user not found', async () => {
       await seedUser();
       const res = await request(app).post(
-        '/api/users/00000000-0000-0000-0000-000000000000/de-active',
+        '/api/v1/users/00000000-0000-0000-0000-000000000000/de-active',
       );
 
       expect(res.status).toBe(404);
@@ -232,7 +232,7 @@ describe('User Routes', () => {
     it('should deactivate user successfully', async () => {
       const user = await seedUser();
 
-      const res = await request(app).post(`/api/users/${user[1].id}/de-active`);
+      const res = await request(app).post(`/api/v1/users/${user[1].id}/de-active`);
 
       expect(res.status).toBe(200);
 
@@ -253,7 +253,7 @@ describe('User Routes', () => {
         .spyOn(UserService.prototype, 'deActiveUser')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).post(`/api/users/${user[1].id}/de-active`);
+      const res = await request(app).post(`/api/v1/users/${user[1].id}/de-active`);
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -264,7 +264,7 @@ describe('User Routes', () => {
     it('should return 404 if user not found', async () => {
       await seedUser();
       const res = await request(app).post(
-        '/api/users/00000000-0000-0000-0000-000000000000/activate',
+        '/api/v1/users/00000000-0000-0000-0000-000000000000/activate',
       );
 
       expect(res.status).toBe(404);
@@ -275,7 +275,7 @@ describe('User Routes', () => {
       const user = await seedUser();
       await userRepo.update({ id: user[1].id }, { status: UserStatus.DE_ACTIVE });
 
-      const res = await request(app).post(`/api/users/${user[1].id}/activate`);
+      const res = await request(app).post(`/api/v1/users/${user[1].id}/activate`);
 
       expect(res.status).toBe(200);
 
@@ -296,7 +296,7 @@ describe('User Routes', () => {
         .spyOn(UserService.prototype, 'activateUser')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).post(`/api/users/${user[1].id}/activate`);
+      const res = await request(app).post(`/api/v1/users/${user[1].id}/activate`);
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');

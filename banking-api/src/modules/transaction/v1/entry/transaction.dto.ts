@@ -4,7 +4,7 @@ import { Transaction } from '@/modules/transaction/domain/entities/transaction.e
 
 import { TransactionStatus, TransactionType } from '@/modules/transaction/types/transaction';
 
-import { BankAccountDTO, toBankAccountDTO } from '@/modules/bank-account/entry/bank-account.dto';
+import { BankAccountDTO, toBankAccountDTO } from '@/modules/bank-account/v1/entry/bank-account.dto';
 
 import { formatMoney } from '@/common/utils/money';
 

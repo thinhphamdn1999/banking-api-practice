@@ -3,7 +3,9 @@ import { FilterOptions } from '@/modules/user/types/user';
 
 import { UserService } from '@/modules/user/domain/services/user.service';
 
-export class UserApplicationService {
+import { UserApplicationService } from '@/modules/user/v1/application/user.application.v1.interface';
+
+export class UserApplicationServiceV1 implements UserApplicationService {
   constructor(private readonly userService: UserService) {}
 
   async findUsers(pagination: PaginationOptions, filter?: FilterOptions) {

@@ -2,23 +2,30 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 
 import { QUERY_KEYS } from '@/constants/queryKeys';
-
-import type { GetBankAccountsParams } from '@/services/bank-accounts.service';
-
-import { bankAccountsService } from '@/services/bank-accounts.service';
-
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { apiClient } from '@/services/api';
+import type { PaginatedResponse, PaginationParams } from '@/types/api';
+import type { BankAccount } from '@/types/bank-account';
 import { getApiErrorMessage } from '@/utils/error';
+
+export interface GetBankAccountsParams extends PaginationParams {
+  userId?: string;
+}
 
 export const useBankAccounts = (params?: GetBankAccountsParams) =>
   useQuery({
     queryKey: [...QUERY_KEYS.BANK_ACCOUNTS, params],
-    queryFn: () => bankAccountsService.getAll(params),
+    queryFn: () =>
+      apiClient
+        .get<PaginatedResponse<BankAccount>>(API_ROUTES.BANK_ACCOUNTS.GET_BANK_ACCOUNTS, { params })
+        .then((res) => res.data),
   });
 
 export const useBankAccount = (id: string) =>
   useQuery({
-    queryKey: QUERY_KEYS.bankAccount(id),
-    queryFn: () => bankAccountsService.getById(id),
+    queryKey: QUERY_KEYS.BANK_ACCOUNT_BY_ID(id),
+    queryFn: () =>
+      apiClient.get<BankAccount>(API_ROUTES.BANK_ACCOUNTS.GET_BANK_ACCOUNT_BY_ID(id)).then((res) => res.data),
     enabled: !!id,
   });
 
@@ -27,7 +34,8 @@ export const useCreateBankAccount = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   return useMutation({
-    mutationFn: (data: { name: string }) => bankAccountsService.create(data),
+    mutationFn: (data: { name: string }) =>
+      apiClient.post<BankAccount>(API_ROUTES.BANK_ACCOUNTS.GET_BANK_ACCOUNTS, data).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BANK_ACCOUNTS });
       enqueueSnackbar('Account created successfully.', { variant: 'success' });
@@ -46,10 +54,12 @@ export const useUpdateBankAccount = () => {
 
   return useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) =>
-      bankAccountsService.update(id, { name }),
+      apiClient
+        .put<BankAccount>(API_ROUTES.BANK_ACCOUNTS.GET_BANK_ACCOUNT_BY_ID(id), { name })
+        .then((res) => res.data),
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BANK_ACCOUNTS });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bankAccount(id) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BANK_ACCOUNT_BY_ID(id) });
       enqueueSnackbar('Account name updated.', { variant: 'success' });
     },
     onError: (error) => {

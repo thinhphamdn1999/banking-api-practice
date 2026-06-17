@@ -18,13 +18,13 @@ import { UserRole } from '@/modules/user/types/user';
 
 import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
-import { TransactionApplicationService } from '@/modules/transaction/application/transaction.application';
+import { TransactionApplicationService } from '@/modules/transaction/v1/application/transaction.application.v1.interface';
 
 import {
   CreateTransactionSchema,
   UpdateTransactionSchema,
   toTransactionDTO,
-} from '@/modules/transaction/entry/transaction.dto';
+} from '@/modules/transaction/v1/entry/transaction.dto';
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionApplicationService) {
