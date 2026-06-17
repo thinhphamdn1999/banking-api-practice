@@ -9,9 +9,9 @@ import { UserRepository } from '@/modules/user/domain/repository/user.repository
 import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
 import { UserService } from '@/modules/user/domain/services/user.service';
 import { ClerkIdentityProvider } from '@/modules/user/domain/external/clerk-identity.provider';
-import { BankAccountApplicationService } from '@/modules/bank-account/application/bank-account.application';
+import { BankAccountApplicationServiceV1 } from '@/modules/bank-account/v1/application/bank-account.application.v1';
 
-import { BankAccountController } from './bank-account.controller';
+import { BankAccountController } from '@/modules/bank-account/v1/entry/bank-account.controller';
 
 const bankAccountRouter = Router();
 
@@ -21,7 +21,7 @@ const userRepository = new UserRepository();
 const bankAccountService = new BankAccountService(bankAccountRepository);
 const userService = new UserService(userRepository, new ClerkIdentityProvider());
 
-const bankAccountApplicationService = new BankAccountApplicationService(
+const bankAccountApplicationService = new BankAccountApplicationServiceV1(
   bankAccountService,
   userService,
 );

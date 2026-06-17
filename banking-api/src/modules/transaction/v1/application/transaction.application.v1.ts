@@ -9,7 +9,6 @@ import {
 import { BaseError } from '@/common/types/error';
 import { PaginationOptions } from '@/common/types/pagination';
 import {
-  CreateTransactionInput,
   FilterOptions,
   TransactionStatus,
   UpdateTransactionInput,
@@ -20,7 +19,12 @@ import { resolveTransactionName } from '@/modules/transaction/utils/transaction'
 import { TransactionService } from '@/modules/transaction/domain/services/transaction.service';
 import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
 
-export class TransactionApplicationService {
+import {
+  CreateTransactionInput,
+  TransactionApplicationService,
+} from '@/modules/transaction/v1/application/transaction.application.v1.interface';
+
+export class TransactionApplicationServiceV1 implements TransactionApplicationService {
   constructor(
     private readonly transactionService: TransactionService,
     private readonly bankAccountService: BankAccountService,

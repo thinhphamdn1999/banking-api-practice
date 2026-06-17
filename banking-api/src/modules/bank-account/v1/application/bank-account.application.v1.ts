@@ -1,14 +1,15 @@
 import { PaginationOptions } from '@/common/types/pagination';
-import {
-  CreateBankAccountInput,
-  FilterOptions,
-  UpdateBankAccountInput,
-} from '@/modules/bank-account/types/bank-account';
+import { FilterOptions, UpdateBankAccountInput } from '@/modules/bank-account/types/bank-account';
 
 import { UserService } from '@/modules/user/domain/services/user.service';
 import { BankAccountService } from '@/modules/bank-account/domain/services/bank-account.service';
 
-export class BankAccountApplicationService {
+import {
+  BankAccountApplicationService,
+  CreateBankAccountInput,
+} from '@/modules/bank-account/v1/application/bank-account.application.v1.interface';
+
+export class BankAccountApplicationServiceV1 implements BankAccountApplicationService {
   constructor(
     private readonly bankAccountService: BankAccountService,
     private readonly userService: UserService,
@@ -17,7 +18,6 @@ export class BankAccountApplicationService {
   private async generateUniqueAccountNumber(): Promise<string> {
     while (true) {
       const number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-
       const exists = await this.bankAccountService.findByAccountNumber(number);
       if (!exists) return number;
     }
@@ -33,9 +33,7 @@ export class BankAccountApplicationService {
 
   async createBankAccount(input: CreateBankAccountInput) {
     const user = await this.userService.getUserById(input.userId);
-
     const newAccountNumber = await this.generateUniqueAccountNumber();
-
     return await this.bankAccountService.createBankAccount({
       user,
       name: input.name,
@@ -43,11 +41,9 @@ export class BankAccountApplicationService {
     });
   }
 
-  async updateBankAccount({ name, userId, bankAccountId }: UpdateBankAccountInput) {
-    await this.userService.getUserById(userId);
-
-    await this.bankAccountService.getBankAccountById(bankAccountId, userId);
-
-    return await this.bankAccountService.updateBankAccount({ name, userId, bankAccountId });
+  async updateBankAccount(input: UpdateBankAccountInput) {
+    await this.userService.getUserById(input.userId);
+    await this.bankAccountService.getBankAccountById(input.bankAccountId, input.userId);
+    return await this.bankAccountService.updateBankAccount(input);
   }
 }

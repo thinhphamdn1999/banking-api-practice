@@ -10,9 +10,9 @@ import {
 import { BaseError } from '@/common/types/error';
 import { createErrorResponse, sendInternalError } from '@/common/utils/error-response';
 
-import { UserApplicationService } from '@/modules/user/application/user.application';
+import { UserApplicationService } from '@/modules/user/v1/application/user.application.v1.interface';
 
-import { toUserDTO } from '@/modules/user/entry/user.dto';
+import { toUserDTO } from '@/modules/user/v1/entry/user.dto';
 
 export class UserController {
   constructor(private readonly userService: UserApplicationService) {

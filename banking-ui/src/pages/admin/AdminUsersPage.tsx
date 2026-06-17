@@ -183,7 +183,7 @@ export const AdminUsersPage = () => {
             <Tooltip title="View detail">
               <IconButton
                 size="small"
-                onClick={() => navigate(ROUTES.adminUserDetail(row.id))}
+                onClick={() => navigate(ROUTES.ADMIN_USER_DETAIL_BY_ID(row.id))}
                 aria-label="view user"
               >
                 <OpenInNewIcon fontSize="small" />

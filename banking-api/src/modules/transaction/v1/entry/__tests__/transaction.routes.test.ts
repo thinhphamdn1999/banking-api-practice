@@ -71,14 +71,14 @@ describe('Transaction Routes', () => {
         .spyOn(TransactionService.prototype, 'findTransactions')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).get('/api/transactions');
+      const res = await request(app).get('/api/v1/transactions');
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
     });
 
     it('should return [] when transaction', async () => {
-      const res = await request(app).get('/api/transactions');
+      const res = await request(app).get('/api/v1/transactions');
 
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
@@ -98,7 +98,7 @@ describe('Transaction Routes', () => {
         accountNumber: '5883926628',
       });
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -110,7 +110,7 @@ describe('Transaction Routes', () => {
           description: 'deposit to bank account',
         });
 
-      const res = await request(app).get('/api/transactions');
+      const res = await request(app).get('/api/v1/transactions');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(Array.isArray(res.body.data)).toBe(true);
@@ -148,7 +148,7 @@ describe('Transaction Routes', () => {
       });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'key-deposit')
         .send({
           type: 'deposit',
@@ -157,7 +157,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'key-withdraw')
         .send({
           type: 'withdraw',
@@ -166,7 +166,7 @@ describe('Transaction Routes', () => {
         });
 
       const res = await request(app).get(
-        '/api/transactions?type=deposit&status=success&page=1&limit=30',
+        '/api/v1/transactions?type=deposit&status=success&page=1&limit=30',
       );
 
       expect(res.status).toBe(200);
@@ -187,7 +187,7 @@ describe('Transaction Routes', () => {
       });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -196,7 +196,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a70')
         .send({
           type: 'transfer',
@@ -206,7 +206,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a71')
         .send({
           type: 'withdraw',
@@ -215,7 +215,7 @@ describe('Transaction Routes', () => {
         });
 
       const res = await request(app)
-        .get(`/api/transactions`)
+        .get(`/api/v1/transactions`)
         .query({
           bankAccountIds: [account1?.id],
         });
@@ -238,7 +238,7 @@ describe('Transaction Routes', () => {
       });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'date-1')
         .send({
           type: 'deposit',
@@ -247,7 +247,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'date-2')
         .send({
           type: 'deposit',
@@ -256,7 +256,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'date-3')
         .send({
           type: 'deposit',
@@ -278,7 +278,9 @@ describe('Transaction Routes', () => {
         createdAt: new Date('2026-03-01'),
       });
 
-      const res = await request(app).get('/api/transactions?fromDate=2026-02-01&toDate=2026-02-28');
+      const res = await request(app).get(
+        '/api/v1/transactions?fromDate=2026-02-01&toDate=2026-02-28',
+      );
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(2);
@@ -297,7 +299,7 @@ describe('Transaction Routes', () => {
       });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'from-1')
         .send({
           type: 'deposit',
@@ -306,7 +308,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'from-2')
         .send({
           type: 'deposit',
@@ -325,7 +327,7 @@ describe('Transaction Routes', () => {
         createdAt: new Date('2026-03-01T00:00:00.000Z'),
       });
 
-      const res = await request(app).get('/api/transactions?fromDate=2026-02-15T00:00:00.000Z');
+      const res = await request(app).get('/api/v1/transactions?fromDate=2026-02-15T00:00:00.000Z');
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(1);
@@ -340,7 +342,7 @@ describe('Transaction Routes', () => {
       });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'to-1')
         .send({
           type: 'deposit',
@@ -349,7 +351,7 @@ describe('Transaction Routes', () => {
         });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'to-2')
         .send({
           type: 'deposit',
@@ -368,7 +370,7 @@ describe('Transaction Routes', () => {
         createdAt: new Date('2026-03-01T00:00:00.000Z'),
       });
 
-      const res = await request(app).get('/api/transactions?toDate=2026-02-12T00:00:00.000Z');
+      const res = await request(app).get('/api/v1/transactions?toDate=2026-02-12T00:00:00.000Z');
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(1);
@@ -384,14 +386,16 @@ describe('Transaction Routes', () => {
         .spyOn(TransactionService.prototype, 'getTransactionById')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).get('/api/transactions/some-id');
+      const res = await request(app).get('/api/v1/transactions/some-id');
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
     });
 
     it('should return 404 if transaction not found', async () => {
-      const res = await request(app).get('/api/transactions/00000000-0000-0000-0000-000000000000');
+      const res = await request(app).get(
+        '/api/v1/transactions/00000000-0000-0000-0000-000000000000',
+      );
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -403,7 +407,7 @@ describe('Transaction Routes', () => {
       });
 
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -419,7 +423,7 @@ describe('Transaction Routes', () => {
         idempotencyKey: '67925adc-1f5d-41b2-98c4-3dc5840b5a69',
       });
 
-      const res = await request(app).get(`/api/transactions/${transaction?.id}`);
+      const res = await request(app).get(`/api/v1/transactions/${transaction?.id}`);
 
       expect(res.status).toBe(200);
 
@@ -451,7 +455,7 @@ describe('Transaction Routes', () => {
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', 'test-500-key')
         .send({
           type: 'deposit',
@@ -468,7 +472,7 @@ describe('Transaction Routes', () => {
         accountNumber: '5883926628',
       });
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -509,7 +513,7 @@ describe('Transaction Routes', () => {
 
     it('should return 400 and type field error if type missing', async () => {
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'invalid',
@@ -526,7 +530,7 @@ describe('Transaction Routes', () => {
       });
 
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .send({
           type: 'deposit',
           amount: { amount: 100, currency: 'usd' },
@@ -539,7 +543,7 @@ describe('Transaction Routes', () => {
 
     it('should return 400 if deposit without destinationAccountId', async () => {
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -552,7 +556,7 @@ describe('Transaction Routes', () => {
 
     it('should return 400 if withdraw without sourceAccountId', async () => {
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'withdraw',
@@ -565,7 +569,7 @@ describe('Transaction Routes', () => {
 
     it('should return 400 if transfer without sourceAccountId or destinationAccountId', async () => {
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'transfer',
@@ -583,7 +587,7 @@ describe('Transaction Routes', () => {
       });
 
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -598,7 +602,7 @@ describe('Transaction Routes', () => {
 
     it('should return 400 if destination account not found', async () => {
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -612,7 +616,7 @@ describe('Transaction Routes', () => {
 
     it('should return 400 if source account not found', async () => {
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'withdraw',
@@ -630,7 +634,7 @@ describe('Transaction Routes', () => {
       });
 
       const res = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'withdraw',
@@ -654,11 +658,11 @@ describe('Transaction Routes', () => {
       };
 
       const first = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send(payload);
       const second = await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send(payload);
 
@@ -672,7 +676,9 @@ describe('Transaction Routes', () => {
         .spyOn(TransactionService.prototype, 'updateTransaction')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).put('/api/transactions/some-id').send({ description: 'test' });
+      const res = await request(app)
+        .put('/api/v1/transactions/some-id')
+        .send({ description: 'test' });
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -683,7 +689,7 @@ describe('Transaction Routes', () => {
         accountNumber: '5883926628',
       });
       await request(app)
-        .post('/api/transactions')
+        .post('/api/v1/transactions')
         .set('Idempotency-Key', '67925adc-1f5d-41b2-98c4-3dc5840b5a69')
         .send({
           type: 'deposit',
@@ -699,7 +705,7 @@ describe('Transaction Routes', () => {
       });
 
       const res = await request(app)
-        .put(`/api/transactions/${transaction?.id}`)
+        .put(`/api/v1/transactions/${transaction?.id}`)
         .send({ description: 'Updated Transaction' });
 
       expect(res.status).toBe(200);
@@ -731,7 +737,7 @@ describe('Transaction Routes', () => {
 
     it('should return 404 if transaction not found when updating', async () => {
       const res = await request(app)
-        .put('/api/transactions/00000000-0000-0000-0000-000000000000')
+        .put('/api/v1/transactions/00000000-0000-0000-0000-000000000000')
         .send({ description: 'test' });
 
       expect(res.status).toBe(404);

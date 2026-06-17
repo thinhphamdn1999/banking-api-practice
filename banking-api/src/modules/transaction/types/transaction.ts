@@ -1,5 +1,4 @@
 import { SortOrder } from '@/common/constants/filter-parameter';
-import { Amount } from '@/common/types/money';
 
 export enum TransactionType {
   DEPOSIT = 'deposit',
@@ -21,15 +20,6 @@ export interface FilterOptions {
   orderBy?: SortOrder;
   sortBy?: string;
   bankAccountIds?: string[];
-}
-
-export interface CreateTransactionInput {
-  type: TransactionType;
-  amount: Amount;
-  idempotencyKey: string;
-  sourceAccountId?: string;
-  destinationAccountId?: string;
-  description?: string;
 }
 
 export interface UpdateTransactionInput {

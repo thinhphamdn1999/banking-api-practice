@@ -61,7 +61,7 @@ describe('Bank Account Routes', () => {
 
   describe('GET /api/bank-accounts', () => {
     it('should return [] when no account', async () => {
-      const res = await request(app).get('/api/bank-accounts');
+      const res = await request(app).get('/api/v1/bank-accounts');
 
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
@@ -78,7 +78,7 @@ describe('Bank Account Routes', () => {
 
     it('should return list of bank accounts', async () => {
       await seedBankAccounts();
-      const res = await request(app).get('/api/bank-accounts');
+      const res = await request(app).get('/api/v1/bank-accounts');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(Array.isArray(res.body.data)).toBe(true);
@@ -105,7 +105,7 @@ describe('Bank Account Routes', () => {
     });
 
     it('should respect pagination query params', async () => {
-      const res = await request(app).get('/api/bank-accounts?page=2&limit=5');
+      const res = await request(app).get('/api/v1/bank-accounts?page=2&limit=5');
 
       expect(res.status).toBe(200);
       expect(res.body.metadata).toEqual(
@@ -132,7 +132,7 @@ describe('Bank Account Routes', () => {
         }),
       );
 
-      const res = await request(app).get('/api/bank-accounts');
+      const res = await request(app).get('/api/v1/bank-accounts');
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(1);
@@ -145,7 +145,7 @@ describe('Bank Account Routes', () => {
         .spyOn(BankAccountService.prototype, 'findBankAccounts')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).get('/api/bank-accounts');
+      const res = await request(app).get('/api/v1/bank-accounts');
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -166,7 +166,7 @@ describe('Bank Account Routes', () => {
         }),
       );
 
-      const res = await request(app).get('/api/bank-accounts');
+      const res = await request(app).get('/api/v1/bank-accounts');
 
       expect(res.status).toBe(200);
       expect(res.body.metadata.totalCount).toBe(2);
@@ -175,7 +175,9 @@ describe('Bank Account Routes', () => {
 
   describe('GET /api/bank-accounts/:id', () => {
     it('should return 404 if user not found', async () => {
-      const res = await request(app).get('/api/bank-accounts/00000000-0000-0000-0000-000000000000');
+      const res = await request(app).get(
+        '/api/v1/bank-accounts/00000000-0000-0000-0000-000000000000',
+      );
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty('errors');
@@ -184,7 +186,7 @@ describe('Bank Account Routes', () => {
     it('should return user if found', async () => {
       const bankAccount = await seedBankAccounts();
 
-      const res = await request(app).get(`/api/bank-accounts/${bankAccount.id}`);
+      const res = await request(app).get(`/api/v1/bank-accounts/${bankAccount.id}`);
 
       expect(res.status).toBe(200);
 
@@ -202,7 +204,7 @@ describe('Bank Account Routes', () => {
         .spyOn(BankAccountService.prototype, 'getBankAccountById')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).get('/api/bank-accounts/some-id');
+      const res = await request(app).get('/api/v1/bank-accounts/some-id');
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -211,7 +213,7 @@ describe('Bank Account Routes', () => {
 
   describe('POST /api/bank-accounts', () => {
     it('should create bank account successfully', async () => {
-      const res = await request(app).post('/api/bank-accounts').send({ name: 'Test Account' });
+      const res = await request(app).post('/api/v1/bank-accounts').send({ name: 'Test Account' });
 
       expect(res.status).toBe(201);
 
@@ -236,7 +238,7 @@ describe('Bank Account Routes', () => {
     });
 
     it('should return 400 if name missing', async () => {
-      const res = await request(app).post('/api/bank-accounts').send({});
+      const res = await request(app).post('/api/v1/bank-accounts').send({});
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty('errors');
@@ -245,7 +247,7 @@ describe('Bank Account Routes', () => {
     it('should return 403 if user does not have USER role', async () => {
       await userRepo.update({ clerkUserId: 'test_user_id' }, { role: UserRole.ADMIN });
 
-      const res = await request(app).post('/api/bank-accounts').send({ name: 'Test Account' });
+      const res = await request(app).post('/api/v1/bank-accounts').send({ name: 'Test Account' });
 
       expect(res.status).toBe(403);
       expect(res.body).toHaveProperty('errors');
@@ -259,7 +261,7 @@ describe('Bank Account Routes', () => {
         .mockResolvedValueOnce(existingAccount)
         .mockResolvedValueOnce(null);
 
-      const res = await request(app).post('/api/bank-accounts').send({ name: 'Test Account' });
+      const res = await request(app).post('/api/v1/bank-accounts').send({ name: 'Test Account' });
 
       expect(res.status).toBe(201);
       expect(BankAccountService.prototype.findByAccountNumber).toHaveBeenCalledTimes(2);
@@ -270,7 +272,7 @@ describe('Bank Account Routes', () => {
         .spyOn(BankAccountService.prototype, 'createBankAccount')
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const res = await request(app).post('/api/bank-accounts').send({ name: 'Test Account' });
+      const res = await request(app).post('/api/v1/bank-accounts').send({ name: 'Test Account' });
 
       expect(res.status).toBe(500);
       expect(res.body).toHaveProperty('errors');
@@ -282,7 +284,7 @@ describe('Bank Account Routes', () => {
       const bankAccount = await seedBankAccounts();
 
       const res = await request(app)
-        .put(`/api/bank-accounts/${bankAccount.id}`)
+        .put(`/api/v1/bank-accounts/${bankAccount.id}`)
         .send({ name: 'Updated Account Name' });
 
       expect(res.status).toBe(200);
@@ -303,7 +305,7 @@ describe('Bank Account Routes', () => {
 
     it('should return 404 if bank account not found', async () => {
       const res = await request(app)
-        .put('/api/bank-accounts/00000000-0000-0000-0000-000000000000')
+        .put('/api/v1/bank-accounts/00000000-0000-0000-0000-000000000000')
         .send({ name: 'Test' });
 
       expect(res.status).toBe(404);
@@ -312,7 +314,7 @@ describe('Bank Account Routes', () => {
     it('should return 400 if name missing', async () => {
       const bankAccount = await seedBankAccounts();
 
-      const res = await request(app).put(`/api/bank-accounts/${bankAccount.id}`).send({});
+      const res = await request(app).put(`/api/v1/bank-accounts/${bankAccount.id}`).send({});
 
       expect(res.status).toBe(400);
     });
@@ -322,7 +324,7 @@ describe('Bank Account Routes', () => {
       await userRepo.update({ clerkUserId: 'test_user_id' }, { role: UserRole.ADMIN });
 
       const res = await request(app)
-        .put(`/api/bank-accounts/${bankAccount.id}`)
+        .put(`/api/v1/bank-accounts/${bankAccount.id}`)
         .send({ name: 'Updated Name' });
 
       expect(res.status).toBe(403);
@@ -336,7 +338,7 @@ describe('Bank Account Routes', () => {
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
       const res = await request(app)
-        .put(`/api/bank-accounts/${bankAccount.id}`)
+        .put(`/api/v1/bank-accounts/${bankAccount.id}`)
         .send({ name: 'Updated Name' });
 
       expect(res.status).toBe(500);

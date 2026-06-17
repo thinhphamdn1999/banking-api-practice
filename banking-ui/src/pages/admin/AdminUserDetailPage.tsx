@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
-import { useQuery } from '@tanstack/react-query';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -24,11 +23,10 @@ import dayjs from 'dayjs';
 import { AccountCard } from '@/components/features/bank-accounts/AccountCard';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { StatusChip } from '@/components/common/StatusChip';
-import { QUERY_KEYS } from '@/constants/queryKeys';
 import { ROUTES } from '@/constants/routes';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
+import { useTransactions } from '@/hooks/useTransactions';
 import { useDeactivateUser, useUserById } from '@/hooks/useUsers';
-import { transactionsService } from '@/services/transactions.service';
 import type { Transaction } from '@/types/transaction';
 import type { User } from '@/types/user';
 import { formatTransactionAmount } from '@/utils/transaction';
@@ -52,31 +50,28 @@ export const AdminUserDetailPage = () => {
   const { user: clerkUser } = useUser();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [txPaginationModel, setTxPaginationModel] = useState({ page: 0, pageSize: 10 });
+  const [transactionPaginationModel, setTransactionPaginationModel] = useState({ page: 0, pageSize: 10 });
 
   // -------------------------------------------------------------------------
   // Data
   // -------------------------------------------------------------------------
-  const { data: userResponse, isLoading: userLoading } = useUserById(id);
-  const user = userResponse?.data;
+  const { data: user, isLoading: userLoading } = useUserById(id);
 
   const { data: accountsResponse, isLoading: accountsLoading } = useBankAccounts({ userId: id });
   const accounts = accountsResponse?.data ?? [];
   const bankAccountIds = accounts.map((a) => a.id);
 
-  const { data: txResponse, isLoading: txLoading } = useQuery({
-    queryKey: [...QUERY_KEYS.TRANSACTIONS, { bankAccountIds, ...txPaginationModel }],
-    queryFn: () =>
-      transactionsService.getAll({
-        bankAccountIds,
-        page: txPaginationModel.page + 1,
-        limit: txPaginationModel.pageSize,
-        orderBy: 'DESC',
-      }),
-    enabled: !accountsLoading && bankAccountIds.length > 0,
-  });
-  const transactions = txResponse?.data ?? [];
-  const txTotal = txResponse?.metadata?.totalCount ?? 0;
+  const { data: transactionsResponse, isLoading: transactionsLoading } = useTransactions(
+    {
+      bankAccountIds,
+      page: transactionPaginationModel.page + 1,
+      limit: transactionPaginationModel.pageSize,
+      orderBy: 'DESC',
+    },
+    { enabled: !accountsLoading && bankAccountIds.length > 0 },
+  );
+  const transactions = transactionsResponse?.data ?? [];
+  const transactionsTotal = transactionsResponse?.metadata?.totalCount ?? 0;
 
   // -------------------------------------------------------------------------
   // Deactivate
@@ -94,7 +89,7 @@ export const AdminUserDetailPage = () => {
   // -------------------------------------------------------------------------
   // Transaction columns
   // -------------------------------------------------------------------------
-  const txColumns = useMemo<GridColDef<Transaction>[]>(
+  const transactionColumns = useMemo<GridColDef<Transaction>[]>(
     () => [
       {
         field: 'createdAt',
@@ -315,12 +310,12 @@ export const AdminUserDetailPage = () => {
             <Box sx={{ width: '100%' }}>
               <DataGrid
                 rows={transactions}
-                columns={txColumns}
-                rowCount={txTotal}
-                loading={txLoading || accountsLoading}
+                columns={transactionColumns}
+                rowCount={transactionsTotal}
+                loading={transactionsLoading || accountsLoading}
                 paginationMode="server"
-                paginationModel={txPaginationModel}
-                onPaginationModelChange={setTxPaginationModel}
+                paginationModel={transactionPaginationModel}
+                onPaginationModelChange={setTransactionPaginationModel}
                 pageSizeOptions={[10, 25, 50]}
                 disableRowSelectionOnClick
                 autoHeight

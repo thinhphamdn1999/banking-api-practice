@@ -15,25 +15,25 @@ tags:
   - name: Webhooks
 
 paths:
-  /users:
+  /v1/users:
     $ref: './paths/users.yaml#/users'
-  /users/me:
+  /v1/users/me:
     $ref: './paths/users.yaml#/currentUser'
-  /users/{id}:
+  /v1/users/{id}:
     $ref: './paths/users.yaml#/userById'
-  /users/{id}/activate:
+  /v1/users/{id}/activate:
     $ref: './paths/users.yaml#/activateUser'
-  /users/{id}/de-active:
+  /v1/users/{id}/de-active:
     $ref: './paths/users.yaml#/deActiveUser'
 
-  /bank-accounts:
+  /v1/bank-accounts:
     $ref: './paths/bank-accounts.yaml#/bankAccounts'
-  /bank-accounts/{id}:
+  /v1/bank-accounts/{id}:
     $ref: './paths/bank-accounts.yaml#/bankAccountById'
 
-  /transactions:
+  /v1/transactions:
     $ref: './paths/transactions.yaml#/transactions'
-  /transactions/{id}:
+  /v1/transactions/{id}:
     $ref: './paths/transactions.yaml#/transactionById'
 
 components:

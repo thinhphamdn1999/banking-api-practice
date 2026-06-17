@@ -8,5 +8,5 @@ export const ROUTES = {
   PROFILE: '/profile',
   ADMIN_USERS: '/admin/users',
   ADMIN_USER_DETAIL: '/admin/users/:id',
-  adminUserDetail: (id: string) => `/admin/users/${id}`,
+  ADMIN_USER_DETAIL_BY_ID: (id: string) => `/admin/users/${id}`,
 } as const;
