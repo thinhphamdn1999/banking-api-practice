@@ -21,7 +21,7 @@ function canonicalize(value: unknown): string {
 
   const sortedEntries = Object.entries(value as Record<string, unknown>)
     .filter(([, entryValue]) => entryValue !== undefined)
-    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .sort(([leftKey], [rightKey]) => (leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0))
     .map(([key, entryValue]) => `${JSON.stringify(key)}:${canonicalize(entryValue)}`);
 
   return `{${sortedEntries.join(',')}}`;
