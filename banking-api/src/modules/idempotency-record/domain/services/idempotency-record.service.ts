@@ -20,6 +20,10 @@ export class IdempotencyRecordService {
     return this.idempotencyRecordRepository.create(data);
   }
 
+  async deleteById(id: string) {
+    return this.idempotencyRecordRepository.delete(id);
+  }
+
   async markCompleted(id: string, responseStatusCode: number, responseBody: unknown) {
     return this.idempotencyRecordRepository.update(
       {
